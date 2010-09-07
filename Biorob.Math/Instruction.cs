@@ -66,7 +66,16 @@ namespace Biorob.Math
 					return false;
 				}
 				
-				context = context[ident] as Dictionary<string, object>;
+				IContextItem item = context[ident] as IContextItem;
+				
+				if (item != null)
+				{
+					context = item.Members;
+				}
+				else
+				{
+					context = null;
+				}
 				
 				if (context == null)
 				{
@@ -103,13 +112,23 @@ namespace Biorob.Math
 			}
 			else
 			{
-				try
+				IContextItem item = val as IContextItem;
+				
+				if (item != null)
 				{
-					stack.Push(Convert.ToDouble(val));
+					stack.Push(item.Value);
 				}
-				catch (InvalidCastException)
+				else
 				{
-					stack.Push(0);
+					try
+					{
+						stack.Push(Convert.ToDouble(val));
+					}
+					catch (InvalidCastException)
+					{
+						Console.Error.WriteLine("Failed to convert `{0}' to double!", val);
+						stack.Push(0);
+					}
 				}
 			}
 		}

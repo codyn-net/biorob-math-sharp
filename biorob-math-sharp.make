@@ -42,6 +42,7 @@ FILES = \
 	AssemblyInfo.cs \
 	Biorob.Math/Constants.cs \
 	Biorob.Math/Expression.cs \
+	Biorob.Math/IContextItem.cs \
 	Biorob.Math/Instruction.cs \
 	Biorob.Math/Operations.cs \
 	Biorob.Math/Tokenizer.cs

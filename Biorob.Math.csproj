@@ -39,6 +39,7 @@
     <Compile Include="Biorob.Math\Instruction.cs" />
     <Compile Include="Biorob.Math\Operations.cs" />
     <Compile Include="Biorob.Math\Tokenizer.cs" />
+    <Compile Include="Biorob.Math\IContextItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
