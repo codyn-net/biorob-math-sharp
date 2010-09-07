@@ -1,0 +1,16 @@
+aclocal.m4
+autom4te.cache
+config.log
+config.status
+install-sh
+configure
+*.pidb
+Makefile
+Makefile.in
+missing
+*.dll
+*.mdb
+*.pc
+*.userprefs
+*.usertasks
+bin
