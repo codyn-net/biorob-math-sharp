@@ -40,9 +40,14 @@
     <Compile Include="Biorob.Math\Operations.cs" />
     <Compile Include="Biorob.Math\Tokenizer.cs" />
     <Compile Include="Biorob.Math\IContextItem.cs" />
+    <Compile Include="Biorob.Math.Solvers\Quadratic.cs" />
+    <Compile Include="Biorob.Math\Complex.cs" />
+    <Compile Include="Biorob.Math.Solvers\Cubic.cs" />
+    <Compile Include="Biorob.Math.Solvers\Polynomial.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Biorob.Math\" />
+    <Folder Include="Biorob.Math.Solvers\" />
   </ItemGroup>
 </Project>

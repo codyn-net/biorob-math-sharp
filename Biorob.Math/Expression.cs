@@ -28,6 +28,24 @@ namespace Biorob.Math
 		public class ContextException : Exception
 		{
 		}
+		
+		public class ParseException : Exception
+		{
+			private Expression d_expression;
+
+			public ParseException(Expression expr)
+			{
+				d_expression = expr;
+			}
+			
+			public Expression Expression
+			{
+				get
+				{
+					return d_expression;
+				}
+			}
+		}
 
 		string d_text;
 		string d_error;
@@ -41,17 +59,17 @@ namespace Biorob.Math
 			d_checkVariables = false;
 		}
 		
-		public static bool Create(string expression, out Expression expr)
+		public static void Create(string expression, out Expression expr)
 		{
 			expr = new Expression();
-			bool ret = expr.Parse(expression);
 			
-			if (!ret)
+			if (!expr.Parse(expression))
 			{
+				ParseException exc = new ParseException(expr);
 				expr = null;
+				
+				throw exc;
 			}
-			
-			return ret;
 		}
 
 		public bool CheckVariables
@@ -412,6 +430,13 @@ namespace Biorob.Math
 
 			d_instructions.Clear();
 			d_error = null;
+			
+			if (text == null || text.Trim() == String.Empty)
+			{
+				d_instructions.Add(new InstructionNumber(0));
+				d_text = "";
+				return true;
+			}
 
 			if (!ParseExpression(tokenizer, -1, false))
 			{
@@ -423,9 +448,9 @@ namespace Biorob.Math
 			return true;
 		}
 
-		private bool ValidateVariables(Expression expr, Dictionary<string, object>[] context)
+		public bool ValidateVariables(params Dictionary<string, object>[] context)
 		{
-			foreach (Instruction instruction in expr.d_instructions)
+			foreach (Instruction instruction in d_instructions)
 			{
 				InstructionIdentifier id = instruction as InstructionIdentifier;
 
@@ -446,7 +471,7 @@ namespace Biorob.Math
 
 						if (other != null)
 						{
-							if (!ValidateVariables(other, context))
+							if (!other.ValidateVariables(context))
 							{
 								return false;
 							}
@@ -473,7 +498,7 @@ namespace Biorob.Math
 				return 0;
 			}
 
-			if (d_checkVariables && !ValidateVariables(this, context))
+			if (d_checkVariables && !ValidateVariables(context))
 			{
 				throw new ContextException();
 			}
