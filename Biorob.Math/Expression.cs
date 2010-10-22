@@ -447,8 +447,16 @@ namespace Biorob.Math
 			d_text = text;
 			return true;
 		}
-
-		public bool ValidateVariables(params Dictionary<string, object>[] context)
+		
+		public string[] ResolveUnknowns(params Dictionary<string, object>[] context)
+		{
+			List<string> ret = new List<string>();
+			ResolveUnknowns(ret, context);
+			
+			return ret.ToArray();
+		}
+		
+		private void ResolveUnknowns(List<string> ret, params Dictionary<string, object>[] context)
 		{
 			foreach (Instruction instruction in d_instructions)
 			{
@@ -458,9 +466,14 @@ namespace Biorob.Math
 				{
 					continue;
 				}
-
-				bool isvalid = false;
-
+				
+				if (ret.Contains(id.Identifier[0]))
+				{
+					continue;
+				}
+				
+				bool found = false;
+				
 				foreach (Dictionary<string, object> ctx in context)
 				{
 					object obj;
@@ -471,24 +484,24 @@ namespace Biorob.Math
 
 						if (other != null)
 						{
-							if (!other.ValidateVariables(context))
-							{
-								return false;
-							}
+							other.ResolveUnknowns(ret, context);
 						}
-
-						isvalid = true;
+						
+						found = true;
 						break;
 					}
 				}
-
-				if (!isvalid)
+				
+				if (!found)
 				{
-					return false;
+					ret.Add(id.Identifier[0]);
 				}
 			}
+		}
 
-			return true;
+		public bool ValidateVariables(params Dictionary<string, object>[] context)
+		{
+			return ResolveUnknowns(context).Length == 0;
 		}
 
 		public double Evaluate(params Dictionary<string, object>[] context)
