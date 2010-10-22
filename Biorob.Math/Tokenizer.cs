@@ -182,7 +182,7 @@ namespace Biorob.Math
 		private string d_text;
 		private int d_pos;
 
-		static string Number = "0123456789:";
+		static string Number = "0123456789";
 		static string Alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 		public Tokenizer(string text)
@@ -216,7 +216,7 @@ namespace Biorob.Math
 
 		private bool IsIdentifier()
 		{
-			string alpha = Alpha + "_";
+			string alpha = Alpha + "_" + "{";
 			return alpha.IndexOf(d_text[d_pos]) >= 0;
 		}
 
@@ -361,10 +361,23 @@ namespace Biorob.Math
 		{
 			string valid = Alpha + "_" + Number + ".";
 			int start = d_pos;
-
-			while (d_pos < d_text.Length && valid.IndexOf(d_text[d_pos]) >= 0)
+			
+			if (d_text[d_pos] == '{')
 			{
+				++start;
 				++d_pos;
+				
+				while (d_pos < d_text.Length && d_text[d_pos] != '}')
+				{
+					++d_pos;
+				}
+			}
+			else
+			{
+				while (d_pos < d_text.Length && valid.IndexOf(d_text[d_pos]) >= 0)
+				{
+					++d_pos;
+				}
 			}
 
 			return new TokenIdentifier(d_text.Substring(start, d_pos - start));
