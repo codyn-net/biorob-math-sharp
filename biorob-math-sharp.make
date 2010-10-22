@@ -45,7 +45,11 @@ FILES = \
 	Biorob.Math/IContextItem.cs \
 	Biorob.Math/Instruction.cs \
 	Biorob.Math/Operations.cs \
-	Biorob.Math/Tokenizer.cs
+	Biorob.Math/Tokenizer.cs \
+	Biorob.Math/Complex.cs \
+	Biorob.Math.Solvers/Polynomial.cs \
+	Biorob.Math.Solvers/Quadratic.cs \
+	Biorob.Math.Solvers/Cubic.cs
 
 DATA_FILES =
 

@@ -26,6 +26,8 @@ namespace Biorob.Math
 	public class Constants
 	{
 		static Dictionary<string, object> s_context;
+		
+		public static double Epsilon = 0.0000000001;
 
 		static Constants()
 		{

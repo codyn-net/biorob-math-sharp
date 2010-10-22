@@ -28,6 +28,24 @@ namespace Biorob.Math
 		public class ContextException : Exception
 		{
 		}
+		
+		public class ParseException : Exception
+		{
+			private Expression d_expression;
+
+			public ParseException(Expression expr)
+			{
+				d_expression = expr;
+			}
+			
+			public Expression Expression
+			{
+				get
+				{
+					return d_expression;
+				}
+			}
+		}
 
 		string d_text;
 		string d_error;
@@ -41,17 +59,17 @@ namespace Biorob.Math
 			d_checkVariables = false;
 		}
 		
-		public static bool Create(string expression, out Expression expr)
+		public static void Create(string expression, out Expression expr)
 		{
 			expr = new Expression();
-			bool ret = expr.Parse(expression);
 			
-			if (!ret)
+			if (!expr.Parse(expression))
 			{
+				ParseException exc = new ParseException(expr);
 				expr = null;
+				
+				throw exc;
 			}
-			
-			return ret;
 		}
 
 		public bool CheckVariables
@@ -412,6 +430,13 @@ namespace Biorob.Math
 
 			d_instructions.Clear();
 			d_error = null;
+			
+			if (text == null || text.Trim() == String.Empty)
+			{
+				d_instructions.Add(new InstructionNumber(0));
+				d_text = "";
+				return true;
+			}
 
 			if (!ParseExpression(tokenizer, -1, false))
 			{
@@ -422,10 +447,18 @@ namespace Biorob.Math
 			d_text = text;
 			return true;
 		}
-
-		private bool ValidateVariables(Expression expr, Dictionary<string, object>[] context)
+		
+		public string[] ResolveUnknowns(params Dictionary<string, object>[] context)
 		{
-			foreach (Instruction instruction in expr.d_instructions)
+			List<string> ret = new List<string>();
+			ResolveUnknowns(ret, context);
+			
+			return ret.ToArray();
+		}
+		
+		private void ResolveUnknowns(List<string> ret, params Dictionary<string, object>[] context)
+		{
+			foreach (Instruction instruction in d_instructions)
 			{
 				InstructionIdentifier id = instruction as InstructionIdentifier;
 
@@ -433,9 +466,14 @@ namespace Biorob.Math
 				{
 					continue;
 				}
-
-				bool isvalid = false;
-
+				
+				if (ret.Contains(id.Identifier[0]))
+				{
+					continue;
+				}
+				
+				bool found = false;
+				
 				foreach (Dictionary<string, object> ctx in context)
 				{
 					object obj;
@@ -446,24 +484,24 @@ namespace Biorob.Math
 
 						if (other != null)
 						{
-							if (!ValidateVariables(other, context))
-							{
-								return false;
-							}
+							other.ResolveUnknowns(ret, context);
 						}
-
-						isvalid = true;
+						
+						found = true;
 						break;
 					}
 				}
-
-				if (!isvalid)
+				
+				if (!found)
 				{
-					return false;
+					ret.Add(id.Identifier[0]);
 				}
 			}
+		}
 
-			return true;
+		public bool ValidateVariables(params Dictionary<string, object>[] context)
+		{
+			return ResolveUnknowns(context).Length == 0;
 		}
 
 		public double Evaluate(params Dictionary<string, object>[] context)
@@ -473,7 +511,7 @@ namespace Biorob.Math
 				return 0;
 			}
 
-			if (d_checkVariables && !ValidateVariables(this, context))
+			if (d_checkVariables && !ValidateVariables(context))
 			{
 				throw new ContextException();
 			}

@@ -1,7 +1,7 @@
 dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
-AC_INIT([libbiorob-math1-sharp], [0.1])
+AC_INIT([libbiorob-math1-sharp], [0.2])
 AM_INIT_AUTOMAKE([foreign])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -30,7 +30,7 @@ fi
 
 AC_ARG_ENABLE(debug,
 	AC_HELP_STRING([--enable-debug],
-		[Use 'DEBUG' Configuration [default=NO]]),
+		[Use 'DEBUG' Configuration [default=YES]]),
 		enable_debug=yes, enable_debug=no)
 AM_CONDITIONAL(ENABLE_DEBUG, test x$enable_debug = xyes)
 if test "x$enable_debug" = "xyes" ; then
@@ -38,8 +38,8 @@ if test "x$enable_debug" = "xyes" ; then
 fi
 AC_ARG_ENABLE(release,
 	AC_HELP_STRING([--enable-release],
-		[Use 'RELEASE' Configuration [default=YES]]),
-		enable_release=no, enable_release=yes)
+		[Use 'RELEASE' Configuration [default=NO]]),
+		enable_release=yes, enable_release=no)
 AM_CONDITIONAL(ENABLE_RELEASE, test x$enable_release = xyes)
 if test "x$enable_release" = "xyes" ; then
 	CONFIG_REQUESTED="yes"
