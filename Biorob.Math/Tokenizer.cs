@@ -105,6 +105,7 @@ namespace Biorob.Math
 			Equal,
 			Or,
 			And,
+			Complement,
 
 			Ternary,
 			TernaryTrue,
@@ -143,6 +144,7 @@ namespace Biorob.Math
 				new OpSet(4, true),  // Equal
 				new OpSet(2, true),  // Or
 				new OpSet(3, true),  // And
+				new OpSet(8, false), // Complement
 
 				// ternary operator
 				new OpSet(1, false), // Ternary
@@ -233,6 +235,8 @@ namespace Biorob.Math
 				case '!':
 				case '<':
 				case '>':
+				case '^':
+				case '~':
 				case '=':
 				case '?':
 				case ':':
@@ -331,6 +335,12 @@ namespace Biorob.Math
 				break;
 				case '<':
 					type = TokenOperator.OperatorType.Less;
+				break;
+				case '^':
+					type = TokenOperator.OperatorType.Power;
+				break;
+				case '~':
+					type = TokenOperator.OperatorType.Complement;
 				break;
 				case '?':
 					type = TokenOperator.OperatorType.TernaryTrue;
