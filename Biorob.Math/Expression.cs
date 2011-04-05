@@ -33,7 +33,7 @@ namespace Biorob.Math
 		{
 			private Expression d_expression;
 
-			public ParseException(Expression expr)
+			public ParseException(Expression expr) : base(expr.ErrorMessage)
 			{
 				d_expression = expr;
 			}
