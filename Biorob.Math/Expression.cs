@@ -549,5 +549,13 @@ namespace Biorob.Math
 		{
 			return Evaluate(new Dictionary<string, object>());
 		}
+		
+		public Instruction[] Instructions
+		{
+			get
+			{
+				return d_instructions.ToArray();
+			}
+		}
 	}
 }
