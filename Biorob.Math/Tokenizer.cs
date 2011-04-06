@@ -132,7 +132,7 @@ namespace Biorob.Math
 				new OpSet(7, true),  // Modulo
 				new OpSet(6, true),  // Plus
 				new OpSet(6, true),  // Minus
-				new OpSet(9, false), // Power
+				new OpSet(11, false), // Power
 
 				// logical operators
 				new OpSet(0, false), // Logical
@@ -147,21 +147,21 @@ namespace Biorob.Math
 				new OpSet(8, false), // Complement
 
 				// ternary operator
-				new OpSet(1, false), // Ternary
+				new OpSet(0, false), // Ternary
 				new OpSet(1, false), // TernaryTrue
 				new OpSet(1, false), // TernaryFalse
 
 				// group 'operator'
 				new OpSet(0, false), // Group
-				new OpSet(10, true), // GroupStart
-				new OpSet(10, true), // GroupEnd
+				new OpSet(11, true), // GroupStart
+				new OpSet(11, true), // GroupEnd
 
-				new OpSet(10, true), // Comma
+				new OpSet(11, true), // Comma
 
 				// unary
-				new OpSet(1, false), // Unary
-				new OpSet(1, false), // UnaryPlus
-				new OpSet(1, false)  // UnaryMinus
+				new OpSet(0, false), // Unary
+				new OpSet(10, false), // UnaryPlus
+				new OpSet(10, false)  // UnaryMinus
 		};
 
 		public OperatorType OpType;

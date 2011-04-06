@@ -319,6 +319,12 @@ namespace Biorob.Math
 		{
 			stack.Push(-stack.Pop());
 		}
+		
+		[Operation(Arity=1)]
+		private static void Complement(Stack<double> stack)
+		{
+			stack.Push(~(int)stack.Pop());
+		}
 
 		[Operation(Arity=3)]
 		private static void Ternary(Stack<double> stack)
@@ -368,6 +374,8 @@ namespace Biorob.Math
 					return new Function(UnaryMinus);
 				case TokenOperator.OperatorType.Ternary:
 					return new Function(Ternary);
+				case TokenOperator.OperatorType.Complement:
+					return new Function(Complement);
 			}
 
 			return null;

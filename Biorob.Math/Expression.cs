@@ -235,35 +235,40 @@ namespace Biorob.Math
 				return ParseGroup(tokenizer);
 			}
 
-			Instruction inst = null;
 			bool ret = true;
 
 			switch (token.OpType)
 			{
 				case TokenOperator.OperatorType.Minus:
-					inst = new InstructionFunction("-", Operations.LookupOperator(TokenOperator.OperatorType.UnaryMinus));
+					token = new TokenOperator(TokenOperator.OperatorType.UnaryMinus, "-");
 				break;
 				case TokenOperator.OperatorType.Plus:
-					inst = new InstructionFunction("-", Operations.LookupOperator(TokenOperator.OperatorType.UnaryPlus));
+					token = new TokenOperator(TokenOperator.OperatorType.UnaryPlus, "+");
 				break;
 				case TokenOperator.OperatorType.Negate:
-					inst = new InstructionFunction("!", Operations.LookupOperator(token.OpType));
+				break;
+				case TokenOperator.OperatorType.Complement:
 				break;
 				default:
 					Error("Expected unary operator (-, +, !) but got `" + token.Text + "'", tokenizer);
 					ret = false;
 				break;
 			}
-
+			
 			if (ret)
 			{
 				tokenizer.Next();
-				ret = ParseExpression(tokenizer, 1000, true);
+				ret = ParseExpression(tokenizer, token.Properties.Priority, token.Properties.LeftAssoc);
 			}
 
-			if (ret && inst != null)
+			if (ret)
 			{
-				d_instructions.Add(inst);
+				Instruction inst = new InstructionFunction(token.Text, Operations.LookupOperator(token.OpType));
+				
+				if (inst != null)
+				{
+					d_instructions.Add(inst);
+				}
 			}
 
 			return ret;
@@ -320,7 +325,7 @@ namespace Biorob.Math
 			}
 
 			tokenizer.Next();
-
+			
 			if (!ParseExpression(tokenizer, token.Properties.Priority, token.Properties.LeftAssoc))
 			{
 				return false;
