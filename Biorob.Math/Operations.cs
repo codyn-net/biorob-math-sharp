@@ -293,13 +293,13 @@ namespace Biorob.Math
 		[Operation(Arity=2)]
 		private static void And(Stack<double> stack)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a == 0 && b == 0 ? 1 : 0; });
+			OperationBinary(stack, delegate (double a, double b) { return (a != 0 && b != 0) ? 1 : 0; });
 		}
 
 		[Operation(Arity=2)]
 		private static void Or(Stack<double> stack)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a == 0 || b == 0 ? 1 : 0; });
+			OperationBinary(stack, delegate (double a, double b) { return (a != 0 || b != 0) ? 1 : 0; });
 		}
 
 		[Operation(Arity=1)]
@@ -318,6 +318,12 @@ namespace Biorob.Math
 		private static void UnaryMinus(Stack<double> stack)
 		{
 			stack.Push(-stack.Pop());
+		}
+		
+		[Operation(Arity=1)]
+		private static void Complement(Stack<double> stack)
+		{
+			stack.Push(~(int)stack.Pop());
 		}
 
 		[Operation(Arity=3)]
@@ -368,6 +374,8 @@ namespace Biorob.Math
 					return new Function(UnaryMinus);
 				case TokenOperator.OperatorType.Ternary:
 					return new Function(Ternary);
+				case TokenOperator.OperatorType.Complement:
+					return new Function(Complement);
 			}
 
 			return null;

@@ -49,7 +49,11 @@ FILES = \
 	Biorob.Math/Complex.cs \
 	Biorob.Math.Solvers/Polynomial.cs \
 	Biorob.Math.Solvers/Quadratic.cs \
-	Biorob.Math.Solvers/Cubic.cs
+	Biorob.Math.Solvers/Cubic.cs \
+	Biorob.Math.Interpolation/PChip.cs \
+	Biorob.Math.Interpolation/Periodic.cs \
+	Biorob.Math.Interpolation/Piece.cs \
+	Biorob.Math.Interpolation/Point.cs
 
 DATA_FILES =
 

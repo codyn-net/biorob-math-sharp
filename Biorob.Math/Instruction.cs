@@ -41,6 +41,11 @@ namespace Biorob.Math
 		{
 			stack.Push(Value);
 		}
+		
+		public override string ToString()
+		{
+			return String.Format("Num({0})", Value);
+		}
 	}
 
 	public class InstructionIdentifier : Instruction
@@ -132,6 +137,11 @@ namespace Biorob.Math
 				}
 			}
 		}
+		
+		public override string ToString()
+		{
+			return String.Format("Idt({0})", String.Join(".", Identifier));
+		}
 	}
 
 	public class InstructionFunction : Instruction
@@ -148,6 +158,11 @@ namespace Biorob.Math
 		public override void Execute(Stack<double> stack, Dictionary<string, object> context)
 		{
 			Function.Execute(stack);
+		}
+		
+		public override string ToString()
+		{
+			return String.Format("Fun({0})", Name);
 		}
 	}
 }
