@@ -44,10 +44,15 @@
     <Compile Include="Biorob.Math\Complex.cs" />
     <Compile Include="Biorob.Math.Solvers\Cubic.cs" />
     <Compile Include="Biorob.Math.Solvers\Polynomial.cs" />
+    <Compile Include="Biorob.Math.Interpolation\PChip.cs" />
+    <Compile Include="Biorob.Math.Interpolation\Piece.cs" />
+    <Compile Include="Biorob.Math.Interpolation\Point.cs" />
+    <Compile Include="Biorob.Math.Interpolation\Periodic.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Biorob.Math\" />
     <Folder Include="Biorob.Math.Solvers\" />
+    <Folder Include="Biorob.Math.Interpolation\" />
   </ItemGroup>
 </Project>
