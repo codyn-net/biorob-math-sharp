@@ -1,3 +1,13 @@
+libbiorob-math1-sharp (0.3-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Fixed priority of unary operators
+  * Fixed && and || operators
+  * Added power (^) and complement (~) operators
+  * Added PChip interpolation
+
+ -- Jesse van den Kieboom <jvanden@grijpc10.epfl.ch>  Thu, 16 Jun 2011 15:18:33 +0200
+
 libbiorob-math1-sharp (0.2-1) UNRELEASED; urgency=low
 
   * New upstream release
