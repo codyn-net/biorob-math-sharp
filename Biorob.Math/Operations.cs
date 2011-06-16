@@ -293,13 +293,13 @@ namespace Biorob.Math
 		[Operation(Arity=2)]
 		private static void And(Stack<double> stack)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a == 0 && b == 0 ? 1 : 0; });
+			OperationBinary(stack, delegate (double a, double b) { return (a != 0 && b != 0) ? 1 : 0; });
 		}
 
 		[Operation(Arity=2)]
 		private static void Or(Stack<double> stack)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a == 0 || b == 0 ? 1 : 0; });
+			OperationBinary(stack, delegate (double a, double b) { return (a != 0 || b != 0) ? 1 : 0; });
 		}
 
 		[Operation(Arity=1)]
