@@ -25,6 +25,30 @@ namespace Biorob.Math.Solvers
 					return new Polynomial(coefficients);
 			}
 		}
+		
+		public Polynomial Derivative
+		{
+			get
+			{
+				// Compute the derivative
+				if (d_coefficients.Length <= 1)
+				{
+					return new Polynomial(0);
+				}
+
+				double[] coefficients = new double[d_coefficients.Length - 1];
+				
+				for (int i = 0; i < d_coefficients.Length - 1; ++i)
+				{
+					int power = d_coefficients.Length - i - 1;
+
+					coefficients[i] = d_coefficients[i] * power;
+				}
+				
+				return Polynomial.Create(coefficients);
+			}
+		}
+		
 		public double[] Coefficients
 		{
 			get
