@@ -21,13 +21,18 @@ namespace Biorob.Math.Solvers
 		
 		public double Evaluate(double x)
 		{
-			double power = 1;
+			return Evaluate(d_coefficients, x);
+		}
+		
+		public static double Evaluate(double[] coefficients, double x)
+		{
 			double ret = 0;
+			double mult = 1;
 			
-			for (int i = d_coefficients.Length - 1; i >= 0; ++i)
+			for (int i = coefficients.Length - 1; i >= 0; --i)
 			{
-				ret += d_coefficients[i] * power;
-				power *= x;
+				ret += mult * coefficients[i];
+				mult *= x;
 			}
 			
 			return ret;

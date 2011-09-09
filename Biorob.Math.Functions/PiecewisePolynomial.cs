@@ -61,18 +61,7 @@ namespace Biorob.Math.Functions
 			
 			public double Evaluate(double x)
 			{
-				double ret = 0;
-				double mult = 1;
-				
-				x = (x - d_range.Min) / d_range.Span;
-	
-				for (int i = Coefficients.Length - 1; i >= 0; --i)
-				{
-					ret += mult * Coefficients[i];
-					mult *= x;
-				}
-				
-				return ret;
+				return Solvers.Polynomial.Evaluate(d_coefficients, d_range.Normalize(x));
 			}
 		}
 		
