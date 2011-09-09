@@ -44,6 +44,11 @@ namespace Biorob.Math.Functions
 				set { d_coefficients = value; }
 			}
 			
+			public static implicit operator double[] (Piece piece)
+			{
+				return piece.d_coefficients;
+			}
+			
 			public int Degree
 			{
 				get
