@@ -7,7 +7,7 @@ namespace Biorob.Math.Solvers
 	{
 		private double[] d_roots;
 
-		public Cubic(double a, double b, double c, double d) : base(new double[] {a, b, c, d})
+		public Cubic(double a, double b, double c, double d) : base(a, b, c, d)
 		{
 			if (System.Math.Abs(a) < Constants.Epsilon)
 			{
@@ -65,12 +65,9 @@ namespace Biorob.Math.Solvers
 			}
 		}
 		
-		public double[] Roots
+		public override double[] Roots
 		{
-			get
-			{
-				return d_roots;
-			}
+			get { return d_roots; }
 		}
 	}
 }
