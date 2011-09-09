@@ -57,6 +57,32 @@ namespace Biorob.Math.Solvers
 			}
 		}
 		
+		public virtual double[] Roots
+		{
+			get { return new double[] {}; }
+		}
+		
+		public virtual Range Range(Range range)
+		{
+			Range ret = new Range();
+
+			Polynomial derivative = Derivative;
+			double[] roots = derivative.Roots;
+			
+			foreach (double x in roots)
+			{
+				if (range.Contains(x))
+				{
+					ret.ExpandMax(Evaluate(x));
+				}
+			}
+			
+			ret.ExpandMax(Evaluate(range.Min));
+			ret.ExpandMax(Evaluate(range.Max));
+			
+			return ret;
+		}
+		
 		public double Evaluate(double x)
 		{
 			return Evaluate(d_coefficients, x);
