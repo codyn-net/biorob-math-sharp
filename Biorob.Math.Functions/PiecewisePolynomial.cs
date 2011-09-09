@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Biorob.Math.Functions
 {
-	public class PiecewisePolynomial
+	public class PiecewisePolynomial : IEnumerable<PiecewisePolynomial.Piece>
 	{
 		public class Piece
 		{
@@ -122,6 +122,16 @@ namespace Biorob.Math.Functions
 			{
 				return double.NaN;
 			}
+		}
+		
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return d_pieces.GetEnumerator();
+		}
+		
+		public IEnumerator<PiecewisePolynomial.Piece> GetEnumerator()
+		{
+			return d_pieces.GetEnumerator();
 		}
 		
 		private bool NextPieceAt(ref int pidx, double x)
