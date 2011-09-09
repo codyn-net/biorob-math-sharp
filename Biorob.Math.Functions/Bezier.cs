@@ -106,6 +106,11 @@ namespace Biorob.Math.Functions
 			get { return d_pieces.Count; }
 		}
 		
+		public Piece this[int idx]
+		{
+			get { return d_pieces[idx]; }
+		}
+		
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return d_pieces.GetEnumerator();

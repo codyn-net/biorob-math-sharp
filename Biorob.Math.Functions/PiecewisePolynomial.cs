@@ -97,6 +97,11 @@ namespace Biorob.Math.Functions
 			get { return d_pieces; }
 		}
 		
+		public Piece this[int idx]
+		{
+			get { return d_pieces[idx]; }
+		}
+		
 		public Piece PieceAt(double x)
 		{
 			int idx = 0;
