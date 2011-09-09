@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Biorob.Math.Functions;
 
 namespace Biorob.Math.Interpolation
 {
 	public class PChip : Interpolator
 	{
-		public override List<Piece> InterpolateSorted(List<Point> points)
+		public override PiecewisePolynomial InterpolateSorted(List<Point> points)
 		{
 			// Remove points that are very close together
 			Point[] r = points.ToArray();
@@ -19,11 +20,10 @@ namespace Biorob.Math.Interpolation
 			}
 			
 			int size = points.Count;
-			List<Piece> ret = new List<Piece>();
-			
+
 			if (size < 2)
 			{
-				return ret;
+				return new PiecewisePolynomial();
 			}
 
 			double[] slopes = new double[size];
@@ -108,6 +108,8 @@ namespace Biorob.Math.Interpolation
 				slopes[size - 1] = 3 * dpdt[size - 2];
 			}
 			
+			PiecewisePolynomial.Piece[] pieces = new PiecewisePolynomial.Piece[size - 1];
+			
 			for (int i = 0; i < size - 1; ++i)
 			{
 				double h = points[i + 1].X - points[i].X;
@@ -127,12 +129,11 @@ namespace Biorob.Math.Interpolation
 					m0,
 					p0.Y
 				};
-
 				
-				ret.Add(new Piece(p0.X, p1.X, coefficients));
+				pieces[i] = new PiecewisePolynomial.Piece(new Range(p0.X, p1.X), coefficients);
 			}
 			
-			return ret;
+			return new PiecewisePolynomial(pieces);
 		}
 	}
 }

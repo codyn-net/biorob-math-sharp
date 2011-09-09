@@ -47,14 +47,16 @@ FILES = \
 	Biorob.Math/Operations.cs \
 	Biorob.Math/Tokenizer.cs \
 	Biorob.Math/Complex.cs \
+	Biorob.Math/Point.cs \
+	Biorob.Math/Range.cs \
+	Biorob.Math/Changeable.cs \
+	Biorob.Math.Functions/PiecewisePolynomial.cs \
 	Biorob.Math.Solvers/Polynomial.cs \
 	Biorob.Math.Solvers/Quadratic.cs \
 	Biorob.Math.Solvers/Cubic.cs \
 	Biorob.Math.Interpolation/Interpolator.cs \
 	Biorob.Math.Interpolation/PChip.cs \
-	Biorob.Math.Interpolation/Periodic.cs \
-	Biorob.Math.Interpolation/Piece.cs \
-	Biorob.Math.Interpolation/Point.cs
+	Biorob.Math.Interpolation/Periodic.cs
 
 DATA_FILES =
 
