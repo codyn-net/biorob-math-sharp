@@ -145,6 +145,17 @@ namespace Biorob.Math
 					return d_y;
 				}
 			}
+			set
+			{
+				if (idx == 0)
+				{
+					X = value;
+				}
+				else
+				{
+					Y = value;
+				}
+			}
 		}
 		
 		public override string ToString()
