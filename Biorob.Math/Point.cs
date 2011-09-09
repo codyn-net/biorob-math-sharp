@@ -56,8 +56,8 @@ namespace Biorob.Math
 				return false;
 			}
 			
-			return System.Math.Abs(d_x - other.d_x) <= double.Epsilon &&
-			       System.Math.Abs(d_y - other.d_y) <= double.Epsilon;
+			return System.Math.Abs(d_x - other.d_x) <= Constants.Epsilon &&
+			       System.Math.Abs(d_y - other.d_y) <= Constants.Epsilon;
 		}
 		
 		public override int GetHashCode()
@@ -96,6 +96,22 @@ namespace Biorob.Math
 					EmitChanged();
 				}
 			}
+		}
+		
+		public void Shift(Point other)
+		{
+			d_x += other.d_x;
+			d_y += other.d_y;
+			
+			EmitChanged();
+		}
+		
+		public void Shift(double dx, double dy)
+		{
+			d_x += dx;
+			d_y += dy;
+			
+			EmitChanged();
 		}
 		
 		public void Update(Point point)
