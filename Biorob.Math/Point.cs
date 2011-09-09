@@ -132,6 +132,26 @@ namespace Biorob.Math
 			EmitChanged();
 		}
 		
+		public void Floor()
+		{
+			Freeze();
+
+			X = System.Math.Floor(d_x);
+			Y = System.Math.Floor(d_y);
+			
+			Thaw();
+		}
+		
+		public static Point operator-(Point a, Point b)
+		{
+			return new Point(a.X - b.X, a.Y - b.Y);
+		}
+		
+		public static Point operator+(Point a, Point b)
+		{
+			return new Point(a.X + b.X, a.Y + b.Y);
+		}
+		
 		public double this[int idx]
 		{
 			get
