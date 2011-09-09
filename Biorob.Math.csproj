@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Biorob.Math\Range.cs" />
     <Compile Include="Biorob.Math.Functions\PiecewisePolynomial.cs" />
     <Compile Include="Biorob.Math.Functions\Bezier.cs" />
+    <Compile Include="Biorob.Math.Solvers\Linear.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

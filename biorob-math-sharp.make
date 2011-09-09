@@ -51,9 +51,11 @@ FILES = \
 	Biorob.Math/Range.cs \
 	Biorob.Math/Changeable.cs \
 	Biorob.Math.Functions/PiecewisePolynomial.cs \
+	Biorob.Math.Functions/Bezier.cs \
 	Biorob.Math.Solvers/Polynomial.cs \
 	Biorob.Math.Solvers/Quadratic.cs \
 	Biorob.Math.Solvers/Cubic.cs \
+	Biorob.Math.Solvers/Linear.cs \
 	Biorob.Math.Interpolation/Interpolator.cs \
 	Biorob.Math.Interpolation/PChip.cs \
 	Biorob.Math.Interpolation/Periodic.cs
