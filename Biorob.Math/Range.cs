@@ -22,6 +22,26 @@ namespace Biorob.Math
 			d_empty = false;
 		}
 		
+		public static Range Parse(string s)
+		{
+			string[] parts = s.Split(new char[] {':'}, 2);
+			double min;
+			double max;
+			
+			if (parts.Length == 2)
+			{
+				min = double.Parse(parts[0]);
+				max = double.Parse(parts[1]);
+			}
+			else
+			{
+				min = double.Parse(s);
+				max = min + 1;
+			}
+			
+			return new Range(min, max);
+		}
+		
 		public Range(Range other) : this(other.Min, other.Max)
 		{
 		}
