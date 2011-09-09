@@ -48,6 +48,7 @@
     <Compile Include="Biorob.Math.Interpolation\Piece.cs" />
     <Compile Include="Biorob.Math.Interpolation\Point.cs" />
     <Compile Include="Biorob.Math.Interpolation\Periodic.cs" />
+    <Compile Include="Biorob.Math.Interpolation\Interpolator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

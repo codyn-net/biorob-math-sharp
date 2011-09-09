@@ -3,52 +3,9 @@ using System.Collections.Generic;
 
 namespace Biorob.Math.Interpolation
 {
-	public class PChip
+	public class PChip : Interpolator
 	{
-		public class Piece : Biorob.Math.Interpolation.Piece
-		{
-			public Point P0;
-			public double M0;
-			public Point P1;
-			public double M1;
-
-			public Piece(Point p0, Point p1, double m0, double m1)
-			{
-				P0 = p0;
-				M0 = m0;
-				P1 = p1;
-				M1 = m1;
-				
-				Start = p0.X;
-				End = p1.X;
-				
-				// O3: 2 * (c1.p - c2.p) + h * (c1.m + c2.m)
-				// O2: 3 * (c2.p - c1.p) - h * (2 * c1.m + c2.m)
-				// O1: h * c1.m
-				// O0: c1.p
-				Coefficients = new double[] {
-					2 * (p0.Y - p1.Y) + m0 + m1,
-					3 * (p1.Y - p0.Y) - 2 * m0 - m1,
-					m0,
-					p0.Y
-				};
-			}
-		}
-
-		public static List<Piece> Interpolate(IEnumerable<Point> unsorted)
-		{
-			List<Point> points = new List<Point>(unsorted);
-			points.Sort();
-			
-			return InterpolateSorted(points);
-		}
-		
-		public static List<Piece> InterpolateSorted(Point[] points)
-		{
-			return InterpolateSorted(new List<Point>(points));
-		}
-		
-		public static List<Piece> InterpolateSorted(List<Point> points)
+		public override List<Piece> InterpolateSorted(List<Point> points)
 		{
 			// Remove points that are very close together
 			Point[] r = points.ToArray();
@@ -155,7 +112,24 @@ namespace Biorob.Math.Interpolation
 			{
 				double h = points[i + 1].X - points[i].X;
 				
-				ret.Add(new Piece(points[i], points[i + 1], h * slopes[i], h * slopes[i + 1]));
+				Point p0 = points[i];
+				Point p1 = points[i + 1];
+				double m0 = slopes[i] * h;
+				double m1 = slopes[i + 1] * h;
+				
+				// O3: 2 * (c1.p - c2.p) + h * (c1.m + c2.m)
+				// O2: 3 * (c2.p - c1.p) - h * (2 * c1.m + c2.m)
+				// O1: h * c1.m
+				// O0: c1.p
+				double[] coefficients = new double[] {
+					2 * (p0.Y - p1.Y) + m0 + m1,
+					3 * (p1.Y - p0.Y) - 2 * m0 - m1,
+					m0,
+					p0.Y
+				};
+
+				
+				ret.Add(new Piece(p0.X, p1.X, coefficients));
 			}
 			
 			return ret;

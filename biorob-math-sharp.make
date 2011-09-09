@@ -50,6 +50,7 @@ FILES = \
 	Biorob.Math.Solvers/Polynomial.cs \
 	Biorob.Math.Solvers/Quadratic.cs \
 	Biorob.Math.Solvers/Cubic.cs \
+	Biorob.Math.Interpolation/Interpolator.cs \
 	Biorob.Math.Interpolation/PChip.cs \
 	Biorob.Math.Interpolation/Periodic.cs \
 	Biorob.Math.Interpolation/Piece.cs \
