@@ -44,6 +44,21 @@ namespace Biorob.Math.Functions
 				set { d_coefficients = value; }
 			}
 			
+			public int Degree
+			{
+				get
+				{
+					if (d_coefficients == null || d_coefficients.Length == 0)
+					{
+						return 0;
+					}
+					else
+					{
+						return d_coefficients.Length - 1;
+					}
+				}
+			}
+			
 			public double Evaluate(double x)
 			{
 				double ret = 0;
