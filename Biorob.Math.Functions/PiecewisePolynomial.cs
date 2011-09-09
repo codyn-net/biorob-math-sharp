@@ -71,6 +71,7 @@ namespace Biorob.Math.Functions
 		}
 		
 		private List<Piece> d_pieces;
+		private Range d_yrange;
 		
 		public PiecewisePolynomial() : this(new Piece[] {})
 		{
@@ -145,6 +146,40 @@ namespace Biorob.Math.Functions
 			}
 			
 			return false;
+		}
+		
+		public Range XRange
+		{
+			get
+			{
+				if (d_pieces == null || d_pieces.Count == 0)
+				{
+					return new Range();
+				}
+
+				return new Range(d_pieces[0].Begin, d_pieces[d_pieces.Count - 1].End);
+			}
+		}
+		
+		public Range YRange
+		{
+			get
+			{
+				if (d_yrange == null)
+				{
+					d_yrange = new Range();
+					
+					Range r = new Range(0, 1);
+
+					foreach (Piece piece in d_pieces)
+					{
+						Solvers.Polynomial poly = Solvers.Polynomial.Create(piece.Coefficients);
+						d_yrange.ExpandMax(poly.Range(r));
+					}
+				}
+				
+				return d_yrange;
+			}
 		}
 
 		public List<Point> Evaluate(Range xrange, int samples)
