@@ -13,14 +13,14 @@ namespace Biorob.Math.Interpolation
 			
 			for (int i = 1; i < r.Length; ++i)
 			{
-				if (System.Math.Abs(r[i - 1].X - r[i].X) < 10e-5)
+				if (System.Math.Abs(r[i - 1].X - r[i].X) < Constants.Epsilon)
 				{
 					points.Remove(r[i - 1]);
 				}
 			}
 			
 			int size = points.Count;
-
+			
 			if (size < 2)
 			{
 				return new PiecewisePolynomial();
@@ -81,8 +81,11 @@ namespace Biorob.Math.Interpolation
 					slopes[i + 1] = 0;
 				}
 			}
-
-			slopes[0] = ((2 * dt[0] + dt[1]) * dpdt[0] - dt[0] * dpdt[1]) / (dt[0] + dt[1]);
+			
+			if (size > 2)
+			{
+				slopes[0] = ((2 * dt[0] + dt[1]) * dpdt[0] - dt[0] * dpdt[1]) / (dt[0] + dt[1]);
+			}
 
 			if (System.Math.Sign(slopes[0]) != System.Math.Sign(dpdt[0]))
 			{
@@ -93,10 +96,13 @@ namespace Biorob.Math.Interpolation
 			{
 				slopes[0] = 3 * dpdt[0];
 			}
-
-			slopes[size - 1] = ((2 * dt[size - 2] + dt[size - 3]) * dpdt[size - 2] -
-			                    dt[size - 2] * dpdt[size - 3]) /
-			                   (dt[size - 2] + dt[size - 3]);
+			
+			if (size > 2)
+			{
+				slopes[size - 1] = ((2 * dt[size - 2] + dt[size - 3]) * dpdt[size - 2] -
+				                    dt[size - 2] * dpdt[size - 3]) /
+				                   (dt[size - 2] + dt[size - 3]);
+			}
 
 			if (System.Math.Sign(slopes[size - 1]) != System.Math.Sign(dpdt[size - 2]))
 			{
