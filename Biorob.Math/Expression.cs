@@ -214,7 +214,7 @@ namespace Biorob.Math
 			return ret;
 		}
 		
-		private bool ParseVector(Tokenizer tokenizer)
+		private bool ParseVector(Tokenizer tokenizer, bool indexer)
 		{
 			Token next = tokenizer.Peek();
 			bool loopit = true;
@@ -261,7 +261,15 @@ namespace Biorob.Math
 				tokenizer.Next();
 			}
 			
-			d_instructions.Add(new InstructionVector(numargs));
+			if (indexer)
+			{
+				d_instructions.Add(new InstructionIndex(numargs));
+			}
+			else
+			{			
+				d_instructions.Add(new InstructionVector(numargs));
+			}
+
 			return true;
 		}
 
@@ -297,7 +305,7 @@ namespace Biorob.Math
 			{
 				// Consume token
 				tokenizer.Next();
-				return ParseVector(tokenizer);
+				return ParseVector(tokenizer, false);
 			}
 
 			bool ret = true;
@@ -380,6 +388,11 @@ namespace Biorob.Math
 			{
 				tokenizer.Next();
 				return ParseTernaryOperator(tokenizer, token);
+			}
+			else if (token.OpType == TokenOperator.OperatorType.VectorStart)
+			{
+				tokenizer.Next();
+				return ParseVector(tokenizer, true);
 			}
 
 			Operations.Function func = Operations.LookupOperator(token.OpType, 2);

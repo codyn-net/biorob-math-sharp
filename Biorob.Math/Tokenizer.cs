@@ -95,6 +95,7 @@ namespace Biorob.Math
 			Plus,
 			Minus,
 			Power,
+			Range,
 
 			Logical,
 			Negate,
@@ -137,6 +138,7 @@ namespace Biorob.Math
 				new OpSet(6, true),  // Plus
 				new OpSet(6, true),  // Minus
 				new OpSet(11, false), // Power
+				new OpSet(11, false), // Range
 
 				// logical operators
 				new OpSet(0, false), // Logical
@@ -221,6 +223,11 @@ namespace Biorob.Math
 
 		private bool IsNumber()
 		{
+			if (d_text.StartsWith(".."))
+			{
+				return false;
+			}
+
 			string number = Number + ".";
 			return number.IndexOf(d_text[d_pos]) >= 0;
 		}
@@ -270,6 +277,11 @@ namespace Biorob.Math
 			do
 			{
 				++d_pos;
+				
+				if (d_pos + 1 < d_text.Length && d_text[d_pos] == '.' && d_text[d_pos + 1] == '.')
+				{
+					break;
+				}
 			}
 			while (d_pos < d_text.Length && valid.IndexOf(d_text[d_pos]) >= 0);
 
@@ -310,6 +322,10 @@ namespace Biorob.Math
 				else if (c == '&' && n == '&')
 				{
 					type = TokenOperator.OperatorType.And;
+				}
+				else if (c == '.' && n == '.')
+				{
+					type = TokenOperator.OperatorType.Range;
 				}
 
 				if (type != TokenOperator.OperatorType.None)
