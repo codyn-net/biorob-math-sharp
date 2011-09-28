@@ -55,353 +55,448 @@ namespace Biorob.Math
 				}
 			}
 		}
+		
+		public static int ExtractArity(MethodInfo info)
+		{
+			ParameterInfo[] pars = info.GetParameters();
+			int arity = pars.Length;
+				
+			if (pars.Length > 0 && pars[0].ParameterType == typeof(Value[]))
+			{
+				arity = -1;
+			}
+			
+			return arity;
+		}
 
 		public class Function
 		{
-			public delegate void Operation(Stack<double> stack);
-
+			private MethodInfo d_operation;
 			private int d_arity;
-			private Operation d_operation;
 
-			public Function(Operation operation)
+			public Function(MethodInfo operation)
 			{
 				d_operation = operation;
-
-				ExtractArity();
+				
+				d_arity = Operations.ExtractArity(operation);
 			}
 
-			public Function(Operation operation, int arity)
+			public void Execute(Stack<Value> stack, int numargs)
 			{
-				d_operation = operation;
-				d_arity = arity;
-			}
-
-			public void Execute(Stack<double> stack)
-			{
-				d_operation(stack);
-			}
-
-			private void ExtractArity()
-			{
-				object[] attrs = d_operation.GetType().GetCustomAttributes(typeof(Operations.Operation), false);
-
-				if (attrs.Length == 0)
+				object[] args;
+				
+				if (d_arity == -1)
 				{
-					d_arity = 0;
+					Value[] arg = new Value[numargs];
+					
+					for (int i = 0; i < numargs; ++i)
+					{
+						arg[numargs - i - 1] = stack.Pop();
+					}
+
+					args = new object[] {arg};
+				}
+				else if (d_arity != numargs)
+				{
+					throw new Exception(String.Format("Number of arguments does not match (got {0}, expected {1})", numargs, d_arity));
 				}
 				else
 				{
-					d_arity = (attrs[0] as Operations.Operation).Arity;
+					args = new object[numargs];
+					
+					for (int i = 0; i < numargs; ++i)
+					{
+						args[numargs - i - 1] = stack.Pop();
+					}
 				}
-			}
 
+				Value ret = (Value)d_operation.Invoke(null, args);
+				stack.Push(ret);
+			}
+			
 			public int Arity
 			{
-				get
+				get { return d_arity; }
+			}
+		}
+		
+		private delegate double BinaryFunction(double a, double b);
+		
+		// Normal functions
+		private static Value Transform(Value a, Value b, BinaryFunction accum, BinaryFunction f)
+		{
+			Value ret = new Value(a.Size);
+			
+			if (ret.Size == 0)
+			{
+				return ret;
+			}
+				
+			for (int i = 0; i < a.Size; ++i)
+			{
+				ret[i] = 0;
+				
+				for (int j = 0; j < b.Size; ++j)
 				{
-					return d_arity;
+					if (j == 0)
+					{
+						ret[i] = f(a[i], b[j]);
+					}
+					else
+					{
+						ret[i] = accum(ret[i], f(a[i], b[j]));
+					}
+				}
+			}
+			
+			return ret;
+		}
+		
+		private static Value Transform(Value a, Value b, BinaryFunction f)
+		{
+			return Transform(a, b, (la, lb) => la + lb, f);
+		}
+
+		private delegate double UnaryFunction(double v);
+		
+		private static Value Transform(Value v, UnaryFunction f)
+		{
+			Value ret = new Value(v.Size);
+			
+			for (int i = 0; i < v.Size; ++i)
+			{
+				ret[i] = f(v[i]);
+			}
+			
+			return ret;
+		}
+		
+		public static Value Pow(Value a, Value b)
+		{
+			return Transform(a, b, System.Math.Pow);
+		}
+		
+		private delegate void ForallValuesFunc(double v);
+		
+		private static void ForallValues(Value[] vals, ForallValuesFunc f)
+		{
+			foreach (Value v in vals)
+			{
+				for (int i = 0; i < v.Size; ++i)
+				{
+					f(v[i]);
 				}
 			}
 		}
-
-		private delegate double BinaryFunction(double a, double b);
-
-		private static void OperationBinary(Stack<double> stack, BinaryFunction func)
+		
+		private static double Accumulate(Value vals, BinaryFunction f)
 		{
-			double second = stack.Pop();
-			double first = stack.Pop();
-
-			stack.Push(func(first, second));
-		}
-
-		// Normal functions
-		[Operation(Arity=2)]
-		public static void Pow(Stack<double> stack)
-		{
-			OperationBinary(stack, System.Math.Pow);
-		}
-
-		[Operation(Arity=2)]
-		public static void Min(Stack<double> stack)
-		{
-			OperationBinary(stack, System.Math.Min);
-		}
-
-		[Operation(Arity=2)]
-		public static void Max(Stack<double> stack)
-		{
-			OperationBinary(stack, System.Math.Max);
-		}
-
-		[Operation(Arity=1)]
-		public static void Sqrt(Stack<double> stack)
-		{
-			stack.Push(System.Math.Sqrt(stack.Pop()));
-		}
-
-		[Operation(Arity=1)]
-		public static void Exp(Stack<double> stack)
-		{
-			stack.Push(System.Math.Exp(stack.Pop()));
-		}
-
-		[Operation(Arity=1)]
-		public static void Ln(Stack<double> stack)
-		{
-			stack.Push(System.Math.Log(stack.Pop()));
+			return Accumulate(new Value[] {vals}, f);
 		}
 		
-		[Operation(Arity=1)]
-		public static void Log10(Stack<double> stack)
+		private static double Accumulate(Value[] vals, BinaryFunction f)
 		{
-			stack.Push(System.Math.Log10(stack.Pop()));
+			bool first = true;
+			double ret = 0;
+			
+			ForallValues(vals, (v) => {
+				if (first)
+				{
+					ret = v;
+				}
+				else
+				{
+					ret = f(ret, v);
+				}
+				
+				first = false;
+			});
+			
+			return ret;
 		}
 
-		[Operation(Arity=1)]
-		public static void Sin(Stack<double> stack)
+		public static Value Min(Value[] vals)
 		{
-			stack.Push(System.Math.Sin(stack.Pop()));
+			return new Value(Accumulate(vals, System.Math.Min));
 		}
 
-		[Operation(Arity=1)]
-		public static void Cos(Stack<double> stack)
+		public static Value Max(Value[] vals)
 		{
-			stack.Push(System.Math.Cos(stack.Pop()));
+			return new Value(Accumulate(vals, System.Math.Max));
 		}
 
-		[Operation(Arity=1)]
-		public static void Tan(Stack<double> stack)
+		public static Value Sqrt(Value val)
 		{
-			stack.Push(System.Math.Tan(stack.Pop()));
+			return Transform(val, System.Math.Sqrt);
 		}
 
-		[Operation(Arity=1)]
-		public static void Abs(Stack<double> stack)
+		public static Value Exp(Value val)
 		{
-			stack.Push(System.Math.Abs(stack.Pop()));
+			return Transform(val, System.Math.Exp);
 		}
 
-		[Operation(Arity=1)]
-		public static void Asin(Stack<double> stack)
+		public static Value Ln(Value val)
 		{
-			stack.Push(System.Math.Asin(stack.Pop()));
-		}
-
-		[Operation(Arity=1)]
-		public static void Acos(Stack<double> stack)
-		{
-			stack.Push(System.Math.Acos(stack.Pop()));
-		}
-
-		[Operation(Arity=1)]
-		public static void Atan(Stack<double> stack)
-		{
-			stack.Push(System.Math.Atan(stack.Pop()));
-		}
-
-		[Operation(Arity=2)]
-		public static void Atan2(Stack<double> stack)
-		{
-			OperationBinary(stack, System.Math.Atan2);
-		}
-
-		[Operation(Arity=1)]
-		public static void Round(Stack<double> stack)
-		{
-			stack.Push(System.Math.Round(stack.Pop()));
-		}
-
-		[Operation(Arity=1)]
-		public static void Ceil(Stack<double> stack)
-		{
-			stack.Push(System.Math.Ceiling(stack.Pop()));
-		}
-
-		[Operation(Arity=1)]
-		public static void Floor(Stack<double> stack)
-		{
-			stack.Push(System.Math.Floor(stack.Pop()));
+			return Transform(val, System.Math.Log);
 		}
 		
-		[Operation(Arity=1)]
-		public static void Sign(Stack<double> stack)
+		public static Value Log10(Value val)
 		{
-			stack.Push(System.Math.Sign(stack.Pop()));
+			return Transform(val, System.Math.Log10);
+		}
+
+		public static Value Sin(Value val)
+		{
+			return Transform(val, System.Math.Sin);
+		}
+
+		public static Value Cos(Value val)
+		{
+			return Transform(val, System.Math.Cos);
+		}
+
+		public static Value Tan(Value val)
+		{
+			return Transform(val, System.Math.Tan);
+		}
+		
+		public static Value Abs(Value val)
+		{
+			return Transform(val, System.Math.Abs);
+		}
+		
+		public static Value Asin(Value val)
+		{
+			return Transform(val, System.Math.Asin);
+		}
+		
+		public static Value Acos(Value val)
+		{
+			return Transform(val, System.Math.Acos);
+		}
+		
+		public static Value Atan(Value val)
+		{
+			return Transform(val, System.Math.Atan);
+		}
+		
+		public static Value Atan2(Value a, Value b)
+		{
+			return Transform(a, b, System.Math.Atan2);
+		}
+
+		public static Value Round(Value val)
+		{
+			return Transform(val, System.Math.Round);
+		}
+		
+		public static Value Ceil(Value val)
+		{
+			return Transform(val, System.Math.Ceiling);
+		}
+		
+		public static Value Floor(Value val)
+		{
+			return Transform(val, System.Math.Floor);
+		}
+		
+		public static Value Sign(Value val)
+		{
+			return Transform(val, (a) => (double)System.Math.Sign(a));
+		}
+		
+		public static Value Sum(Value[] vals)
+		{
+			return new Value(Accumulate(vals, (a, b) => a + b));
+		}
+		
+		public static Value Product(Value[] vals)
+		{
+			return new Value(Accumulate(vals, (a, b) => a * b));
 		}
 
 		// Operators
-		[Operation(Arity=2)]
-		private static void Plus(Stack<double> stack)
+		public static Value Plus(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a + b; });
+			if (a.Size >= b.Size)
+			{
+				return Transform(a, b, (la, lb) => la + lb);
+			}
+			else
+			{
+				return Transform(b, a, (la, lb) => la + lb);
+			}
 		}
 
-		[Operation(Arity=2)]
-		private static void Minus(Stack<double> stack)
+		public static Value Minus(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a - b; });
+			return Transform(a, b, (la, lb) => la - lb);
 		}
 
-		[Operation(Arity=2)]
-		private static void Multiply(Stack<double> stack)
+		public static Value Multiply(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a * b; });
+			if (a.Size >= b.Size)
+			{
+				return Transform(a, b, (la, lb) => la * lb);
+			}
+			else
+			{
+				return Transform(b, a, (la, lb) => la * lb);
+			}
 		}
 
-		[Operation(Arity=2)]
-		private static void Divide(Stack<double> stack)
+		public static Value Divide(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a / b; });
+			return Transform(a, b, (la, lb) => la / lb);
 		}
 
-		[Operation(Arity=2)]
-		private static void Modulo(Stack<double> stack)
+		public static Value Modulo(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a % b; });
+			return Transform(a, b, (la, lb) => la % lb);
 		}
 
-		[Operation(Arity=2)]
-		private static void Equal(Stack<double> stack)
+		public static Value Equal(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a == b ? 1 : 0; });
+			return Transform(a, b, (la, lb) => (la != 0 && lb != 0) ? 1 : 0, (la, lb) => la == lb ? 1 : 0);
 		}
 
-		[Operation(Arity=2)]
-		private static void Greater(Stack<double> stack)
+		public static Value Greater(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a > b ? 1 : 0; });
+			return Transform(a, b, (la, lb) => (la != 0 && lb != 0) ? 1 : 0, (la, lb) => la > lb ? 1 : 0);
 		}
 
-		[Operation(Arity=2)]
-		private static void Less(Stack<double> stack)
+		public static Value Less(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a < b ? 1 : 0; });
+			return Transform(a, b, (la, lb) => (la != 0 && lb != 0) ? 1 : 0, (la, lb) => la < lb ? 1 : 0);
 		}
 
-		[Operation(Arity=2)]
-		private static void GreaterOrEqual(Stack<double> stack)
+		public static Value GreaterOrEqual(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a >= b ? 1 : 0; });
+			return Transform(a, b, (la, lb) => (la != 0 && lb != 0) ? 1 : 0, (la, lb) => la >= lb ? 1 : 0);
 		}
 
-		[Operation(Arity=2)]
-		private static void LessOrEqual(Stack<double> stack)
+		public static Value LessOrEqual(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return a <= b ? 1 : 0; });
+			return Transform(a, b, (la, lb) => (la != 0 && lb != 0) ? 1 : 0, (la, lb) => la <= lb ? 1 : 0);
 		}
 
-		[Operation(Arity=2)]
-		private static void And(Stack<double> stack)
+		public static Value And(Value a, Value b)
 		{
-			OperationBinary(stack, delegate (double a, double b) { return (a != 0 && b != 0) ? 1 : 0; });
-		}
-
-		[Operation(Arity=2)]
-		private static void Or(Stack<double> stack)
-		{
-			OperationBinary(stack, delegate (double a, double b) { return (a != 0 || b != 0) ? 1 : 0; });
-		}
-
-		[Operation(Arity=1)]
-		private static void Negate(Stack<double> stack)
-		{
-			stack.Push(stack.Pop() == 0 ? 1 : 0);
-		}
-
-		[Operation(Arity=1)]
-		private static void UnaryPlus(Stack<double> stack)
-		{
-			// NOOP
-		}
-
-		[Operation(Arity=1)]
-		private static void UnaryMinus(Stack<double> stack)
-		{
-			stack.Push(-stack.Pop());
+			return Transform(a, b, (la, lb) => (la != 0 && lb != 0) ? 1 : 0, (la, lb) => (la != 0) && (lb != 0) ? 1 : 0);
 		}
 		
-		[Operation(Arity=1)]
-		private static void Complement(Stack<double> stack)
+		public static Value Or(Value a, Value b)
 		{
-			stack.Push(~(int)stack.Pop());
+			return Transform(a, b, (la, lb) => (la != 0 && lb != 0) ? 1 : 0, (la, lb) => (la != 0 || lb != 0) ? 1 : 0);
 		}
 
-		[Operation(Arity=3)]
-		private static void Ternary(Stack<double> stack)
+		public static Value Negate(Value val)
 		{
-			double falsepart = stack.Pop();
-			double truepart = stack.Pop();
-			double condition = stack.Pop();
-
-			stack.Push(condition != 0 ? truepart : falsepart);
+			return Transform(val, (v) => v == 0 ? 1 : 0);
 		}
 
-		public static Function LookupOperator(TokenOperator.OperatorType type)
+		public static Value UnaryPlus(Value val)
+		{
+			return new Value(val);
+		}
+
+		public static Value UnaryMinus(Value val)
+		{
+			return Transform(val, (v) => -v);
+		}
+		
+		public static Value Complement(Value val)
+		{
+			return Transform(val, (v) => ~(int)v);
+		}
+
+		public static Value Ternary(Value condition, Value truepart, Value falsepart)
+		{
+			double cond = Accumulate(condition, (a, b) => (a != 0 && b != 0) ? 1 : 0);
+			
+			if (cond != 0)
+			{
+				return new Value(truepart);
+			}
+			else
+			{
+				return new Value(falsepart);
+			}
+		}
+
+		public static Function LookupOperator(TokenOperator.OperatorType type, int arity)
 		{
 			switch (type)
 			{
 				case TokenOperator.OperatorType.Plus:
-					return new Function(Plus);
+					return LookupFunction("plus", arity);
 				case TokenOperator.OperatorType.Minus:
-					return new Function(Minus);
+					return LookupFunction("minus", arity);
 				case TokenOperator.OperatorType.Multiply:
-					return new Function(Multiply);
+					return LookupFunction("multiply", arity);
 				case TokenOperator.OperatorType.Divide:
-					return new Function(Divide);
+					return LookupFunction("divide", arity);
 				case TokenOperator.OperatorType.Modulo:
-					return new Function(Modulo);
+					return LookupFunction("modulo", arity);
 				case TokenOperator.OperatorType.Less:
-					return new Function(Less);
+					return LookupFunction("less", arity);
 				case TokenOperator.OperatorType.Greater:
-					return new Function(Greater);
+					return LookupFunction("greater", arity);
 				case TokenOperator.OperatorType.LessOrEqual:
-					return new Function(LessOrEqual);
+					return LookupFunction("lessorequal", arity);
 				case TokenOperator.OperatorType.GreaterOrEqual:
-					return new Function(GreaterOrEqual);
+					return LookupFunction("greaterorequal", arity);
 				case TokenOperator.OperatorType.Equal:
-					return new Function(Equal);
+					return LookupFunction("equal", arity);
 				case TokenOperator.OperatorType.Negate:
-					return new Function(Negate);
+					return LookupFunction("negate", arity);
 				case TokenOperator.OperatorType.And:
-					return new Function(And);
+					return LookupFunction("and", arity);
 				case TokenOperator.OperatorType.Or:
-					return new Function(Or);
+					return LookupFunction("or", arity);
 				case TokenOperator.OperatorType.Power:
-					return new Function(Pow);
+					return LookupFunction("pow", arity);
 				case TokenOperator.OperatorType.UnaryPlus:
-					return new Function(UnaryPlus);
+					return LookupFunction("unaryplus", arity);
 				case TokenOperator.OperatorType.UnaryMinus:
-					return new Function(UnaryMinus);
+					return LookupFunction("unaryminus", arity);
 				case TokenOperator.OperatorType.Ternary:
-					return new Function(Ternary);
+					return LookupFunction("ternary", arity);
 				case TokenOperator.OperatorType.Complement:
-					return new Function(Complement);
+					return LookupFunction("complement", arity);
 			}
 
 			return null;
 		}
 
-		public static Function LookupFunction(string identifier)
+		public static Function LookupFunction(string identifier, int arity)
 		{
 			// Iterate over all the functions, find the one with the right name
 			MethodInfo[] methods = typeof(Operations).GetMethods(BindingFlags.Static | BindingFlags.Public);
+			MethodInfo fallback = null;
 
 			foreach (MethodInfo method in methods)
 			{
-				object[] attrs = method.GetCustomAttributes(typeof(Operation), false);
-
-				if (attrs.Length == 0)
+				if (method.ReturnType != typeof(Value) || method.Name.ToLower() != identifier.ToLower())
 				{
 					continue;
 				}
-
-				Operation op = attrs[0] as Operation;
-
-				if (method.Name.ToLower() == identifier.ToLower() ||
-				    (op.Name != null && op.Name.ToLower() == identifier.ToLower()))
+				
+				int num = Operations.ExtractArity(method);
+				
+				if (num == -1)
 				{
-					return new Function(delegate (Stack<double> s) { method.Invoke(null, new object[] {s}); }, op.Arity);
+					fallback = method;
 				}
+				else
+				{
+					return new Function(method);
+				}
+			}
+			
+			if (fallback != null)
+			{
+				return new Function(fallback);
 			}
 
 			return null;

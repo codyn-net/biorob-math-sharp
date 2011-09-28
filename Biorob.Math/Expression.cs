@@ -27,6 +27,9 @@ namespace Biorob.Math
 	{
 		public class ContextException : Exception
 		{
+			public ContextException(string fmt, params string[] args) : base(String.Format(fmt, args))
+			{
+			}
 		}
 		
 		public class ParseException : Exception
@@ -57,6 +60,20 @@ namespace Biorob.Math
 		{
 			d_instructions = new List<Instruction>();
 			d_checkVariables = false;
+		}
+		
+		public Expression(string expr) : this()
+		{
+			if (!Parse(expr))
+			{
+				Expression cp = new Expression();
+				
+				cp.d_error = d_error;
+				cp.d_instructions = d_instructions;
+				cp.d_text = d_text;
+
+				throw new ParseException(cp);
+			}
 		}
 		
 		public static void Create(string expression, out Expression expr)
@@ -111,19 +128,12 @@ namespace Biorob.Math
 
 		private bool ParseNumber(Tokenizer tokenizer, TokenNumber token)
 		{
-			d_instructions.Add(new InstructionNumber(token.Value));
+			d_instructions.Add(new InstructionValue(token.Value));
 			return true;
 		}
 
 		private bool ParseFunction(Tokenizer tokenizer, TokenIdentifier identifier)
 		{
-			Operations.Function func = Operations.LookupFunction(identifier.Text);
-
-			if (func == null)
-			{
-				return false;
-			}
-
 			Token next = tokenizer.Peek();
 			bool loopit = true;
 			int numargs = 0;
@@ -168,17 +178,15 @@ namespace Biorob.Math
 				// Consume token
 				tokenizer.Next();
 			}
-
-			if (func.Arity == -1)
+			
+			Operations.Function func = Operations.LookupFunction(identifier.Text, numargs);
+			
+			if (func == null)
 			{
-				d_instructions.Add(new InstructionNumber(numargs));
-			}
-			else if (func.Arity != numargs)
-			{
-				return Error("Invalid number of arguments to function " + identifier.Text + " (got " + numargs + ", expected " + func.Arity + ")", tokenizer);
+				return Error(String.Format("Invalid function `{0}' for provided arguments", identifier.Text), tokenizer);
 			}
 
-			d_instructions.Add(new InstructionFunction(identifier.Text, func));
+			d_instructions.Add(new InstructionFunction(identifier.Text, func, numargs));
 			return true;
 		}
 
@@ -204,6 +212,57 @@ namespace Biorob.Math
 			}
 
 			return ret;
+		}
+		
+		private bool ParseVector(Tokenizer tokenizer)
+		{
+			Token next = tokenizer.Peek();
+			bool loopit = true;
+			int numargs = 0;
+
+			if (next != null && (next is TokenOperator) && ((TokenOperator)next).OpType == TokenOperator.OperatorType.VectorEnd)
+			{
+				// Consume vector end
+				tokenizer.Next();
+				loopit = false;
+			}
+
+			while (loopit)
+			{
+				if (!ParseExpression(tokenizer, -1, false))
+				{
+					return false;
+				}
+
+				++numargs;
+
+				// See what is next
+				next = tokenizer.Peek();
+
+				if (next == null || !(next is TokenOperator))
+				{
+					return Error("Expected `operator', but got " + (next != null ? next.Text : "(nothing)"), tokenizer);
+				}
+
+				TokenOperator nextop = next as TokenOperator;
+
+				if (nextop.OpType == TokenOperator.OperatorType.VectorEnd)
+				{
+					// Consume it
+					tokenizer.Next();
+					break;
+				}
+				else if (nextop.OpType != TokenOperator.OperatorType.Comma)
+				{
+					return Error("Expected `,' but got " + next.Text, tokenizer);
+				}
+
+				// Consume token
+				tokenizer.Next();
+			}
+			
+			d_instructions.Add(new InstructionVector(numargs));
+			return true;
 		}
 
 		private bool ParseGroup(Tokenizer tokenizer)
@@ -234,6 +293,12 @@ namespace Biorob.Math
 				tokenizer.Next();
 				return ParseGroup(tokenizer);
 			}
+			else if (token.OpType == TokenOperator.OperatorType.VectorStart)
+			{
+				// Consume token
+				tokenizer.Next();
+				return ParseVector(tokenizer);
+			}
 
 			bool ret = true;
 
@@ -263,7 +328,7 @@ namespace Biorob.Math
 
 			if (ret)
 			{
-				Instruction inst = new InstructionFunction(token.Text, Operations.LookupOperator(token.OpType));
+				Instruction inst = new InstructionFunction(token.Text, Operations.LookupOperator(token.OpType, 1), 1);
 				
 				if (inst != null)
 				{
@@ -304,7 +369,7 @@ namespace Biorob.Math
 				return false;
 			}
 
-			d_instructions.Add(new InstructionFunction("?:", Operations.LookupOperator(TokenOperator.OperatorType.Ternary)));
+			d_instructions.Add(new InstructionFunction("?:", Operations.LookupOperator(TokenOperator.OperatorType.Ternary, 3), 3));
 			return true;
 		}
 
@@ -317,7 +382,7 @@ namespace Biorob.Math
 				return ParseTernaryOperator(tokenizer, token);
 			}
 
-			Operations.Function func = Operations.LookupOperator(token.OpType);
+			Operations.Function func = Operations.LookupOperator(token.OpType, 2);
 
 			if (func == null)
 			{
@@ -331,7 +396,7 @@ namespace Biorob.Math
 				return false;
 			}
 
-			d_instructions.Add(new InstructionFunction(token.Text, func));
+			d_instructions.Add(new InstructionFunction(token.Text, func, 2));
 			return true;
 		}
 
@@ -357,7 +422,8 @@ namespace Biorob.Math
 
 						if (op.OpType == TokenOperator.OperatorType.GroupEnd ||
 						    op.OpType == TokenOperator.OperatorType.Comma ||
-						    op.OpType == TokenOperator.OperatorType.TernaryFalse)
+						    op.OpType == TokenOperator.OperatorType.TernaryFalse ||
+						    op.OpType == TokenOperator.OperatorType.VectorEnd)
 						{
 							// End of group
 							return true;
@@ -438,7 +504,7 @@ namespace Biorob.Math
 			
 			if (text == null || text.Trim() == String.Empty)
 			{
-				d_instructions.Add(new InstructionNumber(0));
+				d_instructions.Add(new InstructionValue(0));
 				d_text = "";
 				return true;
 			}
@@ -509,19 +575,24 @@ namespace Biorob.Math
 			return ResolveUnknowns(context).Length == 0;
 		}
 
-		public double Evaluate(params Dictionary<string, object>[] context)
+		public Value Evaluate(params Dictionary<string, object>[] context)
 		{
 			if (d_instructions.Count == 0)
 			{
-				return 0;
+				return new Value(0);
 			}
 
-			if (d_checkVariables && !ValidateVariables(context))
+			if (d_checkVariables)
 			{
-				throw new ContextException();
+				string[] unknowns = ResolveUnknowns(context);
+
+				if (unknowns.Length != 0)
+				{
+					throw new ContextException("The variables `{0}' are unknown", string.Join(", ", unknowns));
+				}
 			}
 
-			Stack<double> stack = new Stack<double>();
+			Stack<Value> stack = new Stack<Value>();
 			Dictionary<string, object> all = new Dictionary<string, object>();
 
 			foreach (Dictionary<string, object> dic in context)

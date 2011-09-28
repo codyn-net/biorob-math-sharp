@@ -5,7 +5,7 @@ namespace Biorob.Math
 {
 	public interface IContextItem
 	{
-		double Value
+		Value Value
 		{
 			get;
 		}
