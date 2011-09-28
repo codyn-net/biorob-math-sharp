@@ -54,6 +54,7 @@
     <Compile Include="Biorob.Math.Functions\PiecewisePolynomial.cs" />
     <Compile Include="Biorob.Math.Functions\Bezier.cs" />
     <Compile Include="Biorob.Math.Solvers\Linear.cs" />
+    <Compile Include="Biorob.Math\Value.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

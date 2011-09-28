@@ -114,6 +114,10 @@ namespace Biorob.Math
 			Group,
 			GroupStart,
 			GroupEnd,
+			
+			Vector,
+			VectorStart,
+			VectorEnd,
 
 			Comma,
 
@@ -155,6 +159,11 @@ namespace Biorob.Math
 				new OpSet(0, false), // Group
 				new OpSet(11, true), // GroupStart
 				new OpSet(11, true), // GroupEnd
+				
+				// vector 'operator'
+				new OpSet(0, false), // Vector
+				new OpSet(9, true), // VectorStart
+				new OpSet(9, true), // VectorEnd
 
 				new OpSet(11, true), // Comma
 
@@ -245,6 +254,8 @@ namespace Biorob.Math
 				case '(':
 				case ')':
 				case ',':
+				case '[':
+				case ']':
 					return true;
 			}
 
@@ -353,6 +364,12 @@ namespace Biorob.Math
 				break;
 				case ')':
 					type = TokenOperator.OperatorType.GroupEnd;
+				break;
+				case '[':
+					type = TokenOperator.OperatorType.VectorStart;
+				break;
+				case ']':
+					type = TokenOperator.OperatorType.VectorEnd;
 				break;
 				case ',':
 					type = TokenOperator.OperatorType.Comma;

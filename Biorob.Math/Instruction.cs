@@ -25,26 +25,76 @@ namespace Biorob.Math
 {
 	public abstract class Instruction
 	{
-		public abstract void Execute(Stack<double> stack, Dictionary<string, object> context);
+		public abstract void Execute(Stack<Value> stack, Dictionary<string, object> context);
 	}
 
-	public class InstructionNumber : Instruction
+	public class InstructionValue : Instruction
 	{
-		public double Value;
+		public Value Value;
+		
+		public InstructionValue(double val)
+		{
+			Value = new Value(val);
+		}
 
-		public InstructionNumber(double val)
+		public InstructionValue(Value val)
 		{
 			Value = val;
 		}
 
-		public override void Execute(Stack<double> stack, Dictionary<string, object> context)
+		public override void Execute(Stack<Value> stack, Dictionary<string, object> context)
 		{
 			stack.Push(Value);
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("Num({0})", Value);
+			return String.Format("Value({0})", Value);
+		}
+	}
+	
+	public class InstructionVector : Instruction
+	{
+		public int NumArgs;
+		
+		public InstructionVector(int numargs)
+		{
+			NumArgs = numargs;
+		}
+
+		public override void Execute(Stack<Value> stack, Dictionary<string, object> context)
+		{
+			Stack<Value> vals = new Stack<Value>();
+			
+			int size = 0;
+			
+			for (int i = 0; i < NumArgs; ++i)
+			{
+				Value v = stack.Pop();
+				vals.Push(v);
+				
+				size += v.Size;
+			}
+			
+			Value ret = new Value(size);
+			int idx = 0;
+			
+			while (vals.Count > 0)
+			{
+				Value v = vals.Pop();
+
+				for (int j = 0; j < v.Size; ++j)
+				{
+					ret[idx++] = v[j];
+				}
+			}
+			
+			stack.Push(ret);
+		}
+		
+		public override string ToString()
+		{
+			return String.Format("Vector({0})", NumArgs);
 		}
 	}
 
@@ -99,13 +149,13 @@ namespace Biorob.Math
 			return true;
 		}
 
-		public override void Execute(Stack<double> stack, Dictionary<string, object> context)
+		public override void Execute(Stack<Value> stack, Dictionary<string, object> context)
 		{
 			object val;
 			
 			if (!Find(context, out val))
 			{			
-				stack.Push(0);
+				stack.Push(new Value(0));
 				return;
 			}
 
@@ -123,16 +173,21 @@ namespace Biorob.Math
 				{
 					stack.Push(item.Value);
 				}
+				else if (val.GetType() == typeof(double[]))
+				{
+					stack.Push(new Value((double[])val));
+				}
 				else
 				{
 					try
 					{
-						stack.Push(Convert.ToDouble(val));
+						
+						stack.Push(new Value(Convert.ToDouble(val)));
 					}
 					catch (InvalidCastException)
 					{
 						Console.Error.WriteLine("Failed to convert `{0}' to double!", val);
-						stack.Push(0);
+						stack.Push(new Value(0));
 					}
 				}
 			}
@@ -148,16 +203,18 @@ namespace Biorob.Math
 	{
 		public string Name;
 		public Operations.Function Function;
+		public int NumArgs;
 
-		public InstructionFunction(string name, Operations.Function function)
+		public InstructionFunction(string name, Operations.Function function, int numargs)
 		{
 			Name = name;
 			Function = function;
+			NumArgs = numargs;
 		}
 
-		public override void Execute(Stack<double> stack, Dictionary<string, object> context)
+		public override void Execute(Stack<Value> stack, Dictionary<string, object> context)
 		{
-			Function.Execute(stack);
+			Function.Execute(stack, NumArgs);
 		}
 		
 		public override string ToString()
