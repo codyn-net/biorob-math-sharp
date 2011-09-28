@@ -97,6 +97,40 @@ namespace Biorob.Math
 			return String.Format("Vector({0})", NumArgs);
 		}
 	}
+	
+	public class InstructionIndex : InstructionVector
+	{
+		public InstructionIndex(int numargs) : base(numargs)
+		{
+		}
+
+		public override void Execute(Stack<Value> stack, Dictionary<string, object> context)
+		{
+			base.Execute(stack, context);
+			
+			Value indexer = stack.Pop();
+			Value indexed = stack.Pop();
+			
+			List<double> ret = new List<double>();
+			
+			for (int i = 0; i < indexer.Size; ++i)
+			{
+				int idx = (int)indexer[i];
+				
+				if (idx >= 0 && idx < indexed.Size)
+				{
+					ret.Add(indexed[idx]);
+				}
+			}
+			
+			stack.Push(new Value(ret.ToArray()));
+		}
+		
+		public override string ToString()
+		{
+			return String.Format("Index({0})", NumArgs);
+		}
+	}
 
 	public class InstructionIdentifier : Instruction
 	{

@@ -423,6 +423,29 @@ namespace Biorob.Math
 				return new Value(falsepart);
 			}
 		}
+		
+		public static Value Range(Value a, Value b)
+		{
+			if (a.Size == 0 || b.Size == 0)
+			{
+				return new Value();
+			}
+			
+			int start = (int)a[0];
+			int end = (int)b[0];
+			int dir = System.Math.Sign(end - start);
+			
+			int num = dir * (end - start) + 1;
+			
+			Value ret = new Value(num);
+			
+			for (int i = 0; i < num; ++i)
+			{
+				ret[i] = start + dir * i;
+			}
+			
+			return ret;
+		}
 
 		public static Function LookupOperator(TokenOperator.OperatorType type, int arity)
 		{
@@ -456,6 +479,8 @@ namespace Biorob.Math
 					return LookupFunction("or", arity);
 				case TokenOperator.OperatorType.Power:
 					return LookupFunction("pow", arity);
+				case TokenOperator.OperatorType.Range:
+					return LookupFunction("range", arity);
 				case TokenOperator.OperatorType.UnaryPlus:
 					return LookupFunction("unaryplus", arity);
 				case TokenOperator.OperatorType.UnaryMinus:
