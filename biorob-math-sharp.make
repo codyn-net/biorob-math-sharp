@@ -50,6 +50,7 @@ FILES = \
 	Biorob.Math/Point.cs \
 	Biorob.Math/Range.cs \
 	Biorob.Math/Changeable.cs \
+	Biorob.Math/Value.cs \
 	Biorob.Math.Functions/PiecewisePolynomial.cs \
 	Biorob.Math.Functions/Bezier.cs \
 	Biorob.Math.Solvers/Polynomial.cs \
