@@ -2,7 +2,7 @@ using System;
 
 namespace Biorob.Math
 {
-	public class Value
+	public class Value : IConvertible
 	{
 		private double[] d_value;
 		
@@ -46,6 +46,91 @@ namespace Biorob.Math
 			
 			string[] ret = Array.ConvertAll<double, string>(d_value, (a) => a.ToString());
 			return "[" + String.Join(", ", ret) + "]";
+		}
+		
+		public bool ToBoolean (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public char ToChar (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public DateTime ToDateTime (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public decimal ToDecimal (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public byte ToByte (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public double ToDouble (IFormatProvider provider)
+		{
+			return d_value[0];
+		}
+		
+		public short ToInt16 (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public int ToInt32 (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public long ToInt64 (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public sbyte ToSByte (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public float ToSingle (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public string ToString (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public object ToType (Type conversionType, IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public ushort ToUInt16 (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public uint ToUInt32 (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public ulong ToUInt64 (IFormatProvider provider)
+		{
+			throw new InvalidCastException();
+		}
+		
+		public TypeCode GetTypeCode()
+		{
+			return TypeCode.Double;
 		}
 	}
 }
