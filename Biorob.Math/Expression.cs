@@ -602,7 +602,7 @@ namespace Biorob.Math
 		{
 			if (d_instructions.Count == 0)
 			{
-				return new Value(0);
+				return new Value(0.0);
 			}
 
 			if (d_checkVariables)
