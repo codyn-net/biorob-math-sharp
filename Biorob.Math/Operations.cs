@@ -320,6 +320,18 @@ namespace Biorob.Math
 		{
 			return new Value(Accumulate(vals, (a, b) => a * b));
 		}
+		
+		public static Value Length(Value[] vals)
+		{
+			Value ret = new Value(vals.Length);
+			
+			for (int i = 0; i < vals.Length; ++i)
+			{
+				ret[i] = vals[i].Size;
+			}
+			
+			return ret;
+		}
 
 		// Operators
 		public static Value Plus(Value a, Value b)
