@@ -263,7 +263,17 @@ namespace Biorob.Math
 			
 			if (indexer)
 			{
-				d_instructions.Add(new InstructionIndex(numargs));
+				InstructionFunction f = d_instructions[d_instructions.Count - 1] as InstructionFunction;
+				
+				if (numargs == 1 && f != null && f.Name == "..")
+				{
+					d_instructions.Remove(f);
+					d_instructions.Add(new InstructionIndexRange());
+				}
+				else
+				{
+					d_instructions.Add(new InstructionIndex(numargs));
+				}
 			}
 			else
 			{			
