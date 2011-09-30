@@ -131,9 +131,15 @@ namespace Biorob.Math
 			{
 				return ret;
 			}
-				
+			
 			for (int i = 0; i < a.Size; ++i)
 			{
+				if (a.Size == b.Size)
+				{
+					ret[i] = f(a[i], b[i]);
+					continue;
+				}
+
 				ret[i] = 0;
 				
 				for (int j = 0; j < b.Size; ++j)
