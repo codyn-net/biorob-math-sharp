@@ -98,6 +98,42 @@ namespace Biorob.Math
 		}
 	}
 	
+	public class InstructionIndexRange : InstructionIndex
+	{
+		public InstructionIndexRange() : base(1)
+		{
+		}
+		
+		public override void Execute(Stack<Value> stack, Dictionary<string, object> context)
+		{
+			Value end = stack.Pop();
+			Value start = stack.Pop();
+			Value v = stack.Peek();
+			
+			if (end.Size == 0 || start.Size == 0)
+			{
+				stack.Push(new Value());
+				return;
+			}
+			
+			int s = (int)start[0];
+			int e = (int)end[0];
+			
+			if (s < 0)
+			{
+				s = v.Size + s;
+			}
+			
+			if (e < 0)
+			{
+				e = v.Size + e;
+			}
+			
+			stack.Push(Operations.Range(new Value((double)s), new Value((double)e)));
+			base.Execute(stack, context);
+		}
+	}
+	
 	public class InstructionIndex : InstructionVector
 	{
 		public InstructionIndex(int numargs) : base(numargs)
@@ -211,11 +247,14 @@ namespace Biorob.Math
 				{
 					stack.Push(new Value((double[])val));
 				}
+				else if (val is Value)
+				{
+					stack.Push((Value)val);
+				}
 				else
 				{
 					try
 					{
-						
 						stack.Push(new Value(Convert.ToDouble(val)));
 					}
 					catch (InvalidCastException)
