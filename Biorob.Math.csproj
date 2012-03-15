@@ -31,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -45,14 +46,20 @@
     <Compile Include="Biorob.Math.Solvers\Cubic.cs" />
     <Compile Include="Biorob.Math.Solvers\Polynomial.cs" />
     <Compile Include="Biorob.Math.Interpolation\PChip.cs" />
-    <Compile Include="Biorob.Math.Interpolation\Piece.cs" />
-    <Compile Include="Biorob.Math.Interpolation\Point.cs" />
     <Compile Include="Biorob.Math.Interpolation\Periodic.cs" />
+    <Compile Include="Biorob.Math.Interpolation\Interpolator.cs" />
+    <Compile Include="Biorob.Math\Changeable.cs" />
+    <Compile Include="Biorob.Math\Point.cs" />
+    <Compile Include="Biorob.Math\Range.cs" />
+    <Compile Include="Biorob.Math.Functions\PiecewisePolynomial.cs" />
+    <Compile Include="Biorob.Math.Functions\Bezier.cs" />
+    <Compile Include="Biorob.Math.Solvers\Linear.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Biorob.Math\" />
     <Folder Include="Biorob.Math.Solvers\" />
     <Folder Include="Biorob.Math.Interpolation\" />
+    <Folder Include="Biorob.Math.Functions\" />
   </ItemGroup>
 </Project>
