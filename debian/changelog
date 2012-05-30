@@ -1,3 +1,9 @@
+libbiorob-math1-sharp (0.5-1) precise; urgency=low
+
+  * New upstream relase that fix build on precise.
+
+ -- Alexandre Tuleu <alexandre.tuleu.2005@polytechnique.org>  Wed, 30 May 2012 17:12:08 +0200
+
 libbiorob-math1-sharp (0.4-1) UNRELEASED; urgency=low
 
   * New upstream release
