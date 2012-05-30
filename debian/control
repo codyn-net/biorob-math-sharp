@@ -5,7 +5,7 @@ Build-Depends: debhelper (>= 7),
                autotools-dev,
                cdbs,
                pkg-config,
-               mono-devel | mono-gmcs,
+               mono-gmcs,
                libmono2.0-cil
 Standards-Version: 3.8.0
 Section: libs
