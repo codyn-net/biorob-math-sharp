@@ -16,11 +16,6 @@ namespace Biorob.Math
 			return v[0];
 		}
 		
-		public Value(int size)
-		{
-			d_value = new double[size];
-		}
-		
 		public Value(params double[] val)
 		{
 			d_value = val;
