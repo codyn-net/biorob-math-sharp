@@ -559,12 +559,12 @@ namespace Biorob.Math
 				{
 					fallback = method;
 				}
-				else
+				else if (num == arity)
 				{
 					return new Function(method);
 				}
 			}
-			
+
 			if (fallback != null)
 			{
 				return new Function(fallback);
