@@ -17,7 +17,6 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 using System;
 using System.Collections.Generic;
 
@@ -53,7 +52,6 @@ namespace Biorob.Math
 		string d_text;
 		string d_error;
 		bool d_checkVariables;
-
 		List<Instruction> d_instructions;
 
 		public Expression()
@@ -322,19 +320,19 @@ namespace Biorob.Math
 
 			switch (token.OpType)
 			{
-				case TokenOperator.OperatorType.Minus:
-					token = new TokenOperator(TokenOperator.OperatorType.UnaryMinus, "-");
+			case TokenOperator.OperatorType.Minus:
+				token = new TokenOperator(TokenOperator.OperatorType.UnaryMinus, "-");
 				break;
-				case TokenOperator.OperatorType.Plus:
-					token = new TokenOperator(TokenOperator.OperatorType.UnaryPlus, "+");
+			case TokenOperator.OperatorType.Plus:
+				token = new TokenOperator(TokenOperator.OperatorType.UnaryPlus, "+");
 				break;
-				case TokenOperator.OperatorType.Negate:
+			case TokenOperator.OperatorType.Negate:
 				break;
-				case TokenOperator.OperatorType.Complement:
+			case TokenOperator.OperatorType.Complement:
 				break;
-				default:
-					Error("Expected unary operator (-, +, !) but got `" + token.Text + "'", tokenizer);
-					ret = false;
+			default:
+				Error("Expected unary operator (-, +, !) but got `" + token.Text + "'", tokenizer);
+				ret = false;
 				break;
 			}
 			
@@ -433,52 +431,52 @@ namespace Biorob.Math
 			{
 				switch (token.Type)
 				{
-					case Token.TokenType.Number:
-						ret = ParseNumber(tokenizer, token as TokenNumber);
+				case Token.TokenType.Number:
+					ret = ParseNumber(tokenizer, token as TokenNumber);
 					break;
-					case Token.TokenType.Identifier:
-						ret = ParseIdentifier(tokenizer, token as TokenIdentifier);
-						token = null;
+				case Token.TokenType.Identifier:
+					ret = ParseIdentifier(tokenizer, token as TokenIdentifier);
+					token = null;
 					break;
-					case Token.TokenType.Operator:
-						TokenOperator op = token as TokenOperator;
+				case Token.TokenType.Operator:
+					TokenOperator op = token as TokenOperator;
 
-						if (op.OpType == TokenOperator.OperatorType.GroupEnd ||
+					if (op.OpType == TokenOperator.OperatorType.GroupEnd ||
 						    op.OpType == TokenOperator.OperatorType.Comma ||
 						    op.OpType == TokenOperator.OperatorType.TernaryFalse ||
 						    op.OpType == TokenOperator.OperatorType.VectorEnd)
-						{
-							// End of group
-							return true;
-						}
+					{
+						// End of group
+						return true;
+					}
 
-						if (num == 0)
-						{
-							ret = ParseUnaryOperator(tokenizer, op);
+					if (num == 0)
+					{
+						ret = ParseUnaryOperator(tokenizer, op);
 
-							if (ret)
-							{
-								token = null;
-							}
+						if (ret)
+						{
+							token = null;
 						}
-						else if (op.Properties.Priority < priority ||
+					}
+					else if (op.Properties.Priority < priority ||
 						         (op.Properties.Priority == priority && leftAssoc))
-						{
-							// Do not handle operator here yet
-							return true;
-						}
-						else
-						{
-							ret = ParseOperator(tokenizer, op);
+					{
+						// Do not handle operator here yet
+						return true;
+					}
+					else
+					{
+						ret = ParseOperator(tokenizer, op);
 
-							if (ret)
-							{
-								token = null;
-							}
+						if (ret)
+						{
+							token = null;
 						}
+					}
 					break;
-					default:
-						ret = Error("Unknown token: " + token.Text, tokenizer);
+				default:
+					ret = Error("Unknown token: " + token.Text, tokenizer);
 					break;
 				}
 

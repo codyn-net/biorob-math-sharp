@@ -17,7 +17,6 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -26,6 +25,13 @@ namespace Biorob.Math
 {
 	public class Operations
 	{
+		public static System.Random RandomGenerator;
+
+		static Operations()
+		{
+			RandomGenerator = new System.Random(Environment.TickCount);
+		}
+
 		public class Operation : Attribute
 		{
 			private int d_arity;
@@ -120,7 +126,7 @@ namespace Biorob.Math
 			}
 		}
 		
-		private delegate double BinaryFunction(double a, double b);
+		private delegate double BinaryFunction(double a,double b);
 		
 		// Normal functions
 		private static Value Transform(Value a, Value b, BinaryFunction accum, BinaryFunction f)
@@ -219,6 +225,28 @@ namespace Biorob.Math
 			});
 			
 			return ret;
+		}
+
+		public static Value Rand()
+		{
+			if (RandomGenerator == null)
+			{
+				return new Value(0);
+			}
+			else
+			{
+				return new Value(RandomGenerator.NextDouble());
+			}
+		}
+
+		public static Value Rand(Value maxval)
+		{
+			return new Value((double)Rand() * (double)maxval);
+		}
+
+		public static Value Rand(Value minval, Value maxval)
+		{
+			return new Value((double)Rand() * ((double)maxval - (double)minval) + (double)minval);
 		}
 
 		public static Value Min(Value[] vals)
@@ -469,44 +497,44 @@ namespace Biorob.Math
 		{
 			switch (type)
 			{
-				case TokenOperator.OperatorType.Plus:
-					return LookupFunction("plus", arity);
-				case TokenOperator.OperatorType.Minus:
-					return LookupFunction("minus", arity);
-				case TokenOperator.OperatorType.Multiply:
-					return LookupFunction("multiply", arity);
-				case TokenOperator.OperatorType.Divide:
-					return LookupFunction("divide", arity);
-				case TokenOperator.OperatorType.Modulo:
-					return LookupFunction("modulo", arity);
-				case TokenOperator.OperatorType.Less:
-					return LookupFunction("less", arity);
-				case TokenOperator.OperatorType.Greater:
-					return LookupFunction("greater", arity);
-				case TokenOperator.OperatorType.LessOrEqual:
-					return LookupFunction("lessorequal", arity);
-				case TokenOperator.OperatorType.GreaterOrEqual:
-					return LookupFunction("greaterorequal", arity);
-				case TokenOperator.OperatorType.Equal:
-					return LookupFunction("equal", arity);
-				case TokenOperator.OperatorType.Negate:
-					return LookupFunction("negate", arity);
-				case TokenOperator.OperatorType.And:
-					return LookupFunction("and", arity);
-				case TokenOperator.OperatorType.Or:
-					return LookupFunction("or", arity);
-				case TokenOperator.OperatorType.Power:
-					return LookupFunction("pow", arity);
-				case TokenOperator.OperatorType.Range:
-					return LookupFunction("range", arity);
-				case TokenOperator.OperatorType.UnaryPlus:
-					return LookupFunction("unaryplus", arity);
-				case TokenOperator.OperatorType.UnaryMinus:
-					return LookupFunction("unaryminus", arity);
-				case TokenOperator.OperatorType.Ternary:
-					return LookupFunction("ternary", arity);
-				case TokenOperator.OperatorType.Complement:
-					return LookupFunction("complement", arity);
+			case TokenOperator.OperatorType.Plus:
+				return LookupFunction("plus", arity);
+			case TokenOperator.OperatorType.Minus:
+				return LookupFunction("minus", arity);
+			case TokenOperator.OperatorType.Multiply:
+				return LookupFunction("multiply", arity);
+			case TokenOperator.OperatorType.Divide:
+				return LookupFunction("divide", arity);
+			case TokenOperator.OperatorType.Modulo:
+				return LookupFunction("modulo", arity);
+			case TokenOperator.OperatorType.Less:
+				return LookupFunction("less", arity);
+			case TokenOperator.OperatorType.Greater:
+				return LookupFunction("greater", arity);
+			case TokenOperator.OperatorType.LessOrEqual:
+				return LookupFunction("lessorequal", arity);
+			case TokenOperator.OperatorType.GreaterOrEqual:
+				return LookupFunction("greaterorequal", arity);
+			case TokenOperator.OperatorType.Equal:
+				return LookupFunction("equal", arity);
+			case TokenOperator.OperatorType.Negate:
+				return LookupFunction("negate", arity);
+			case TokenOperator.OperatorType.And:
+				return LookupFunction("and", arity);
+			case TokenOperator.OperatorType.Or:
+				return LookupFunction("or", arity);
+			case TokenOperator.OperatorType.Power:
+				return LookupFunction("pow", arity);
+			case TokenOperator.OperatorType.Range:
+				return LookupFunction("range", arity);
+			case TokenOperator.OperatorType.UnaryPlus:
+				return LookupFunction("unaryplus", arity);
+			case TokenOperator.OperatorType.UnaryMinus:
+				return LookupFunction("unaryminus", arity);
+			case TokenOperator.OperatorType.Ternary:
+				return LookupFunction("ternary", arity);
+			case TokenOperator.OperatorType.Complement:
+				return LookupFunction("complement", arity);
 			}
 
 			return null;
@@ -531,12 +559,12 @@ namespace Biorob.Math
 				{
 					fallback = method;
 				}
-				else
+				else if (num == arity)
 				{
 					return new Function(method);
 				}
 			}
-			
+
 			if (fallback != null)
 			{
 				return new Function(fallback);

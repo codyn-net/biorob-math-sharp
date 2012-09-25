@@ -17,7 +17,6 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
- 
 using System;
 using System.Collections.Generic;
 
@@ -26,17 +25,16 @@ namespace Biorob.Math
 	public class Constants
 	{
 		static Dictionary<string, object> s_context;
-		
 		public static double Epsilon = 1e-10;
 
 		static Constants()
 		{
 			s_context = new Dictionary<string, object>();
 
-			s_context["PI"] = System.Math.PI;
-			s_context["pi"] = System.Math.PI;
-			s_context["E"] = System.Math.E;
-			s_context["e"] = System.Math.E;
+			s_context["PI"] = new Value(System.Math.PI);
+			s_context["pi"] = new Value(System.Math.PI);
+			s_context["E"] = new Value(System.Math.E);
+			s_context["e"] = new Value(System.Math.E);
 		}
 
 		public static Dictionary<string, object> Context
