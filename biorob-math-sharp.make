@@ -1,5 +1,5 @@
 # Warning: This is an automatically generated file, do not edit!
-ASSEMBLY_COMPILER_COMMAND = gmcs
+ASSEMBLY_COMPILER_COMMAND = $(CMCS)
 COMPILE_TARGET = library
 PROJECT_REFERENCES =
 
