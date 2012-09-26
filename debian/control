@@ -5,7 +5,8 @@ Build-Depends: debhelper (>= 7),
                autotools-dev,
                cdbs,
                pkg-config,
-               mono-dmcs
+               mono-gmcs,
+               libmono2.0-cil
 Standards-Version: 3.8.0
 Section: libs
 Homepage: http://biorob.epfl.ch
@@ -13,6 +14,6 @@ Homepage: http://biorob.epfl.ch
 Package: libbiorob-math1-sharp
 Section: libs
 Architecture: any
-Depends: mono-runtime, libmono-system4.0-cil, libmono-corlib4.0-cil
+Depends: mono-runtime, libmono-system2.0-cil, libmono-corlib2.0-cil, libmono2.0-cil
 Description: Math expression library
  Math expression library
