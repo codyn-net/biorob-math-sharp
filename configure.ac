@@ -25,6 +25,10 @@ AC_PROG_INSTALL
 dnl check for dmcs first, then gmcs
 AC_PATH_PROGS(CMCS, dmcs gmcs, no)
 
+if test "x$CMCS" = "xno"; then
+	AC_MSG_ERROR([dmcs nor gmcs found])
+fi
+
 AC_ARG_ENABLE(debug,
 	AC_HELP_STRING([--enable-debug],
 		[Use 'DEBUG' Configuration [default=YES]]),
