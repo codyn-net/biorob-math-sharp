@@ -1,3 +1,11 @@
+libbiorob-math1-sharp (0.6-1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Fix build for various distributions
+
+ -- Jesse van den Kieboom <jesse.vandenkieboom@epfl.ch>  Wed, 26 Sep 2012 13:12:53 +0200
+
+
 libbiorob-math1-sharp (0.5-1) precise; urgency=low
 
   * New upstream relase that fix build on precise.
