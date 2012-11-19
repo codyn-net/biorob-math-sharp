@@ -1,7 +1,9 @@
+prefix=@prefix@
+libdir=${prefix}/lib
+Libraries=${libdir}/@PACKAGE@/Biorob.Math.dll
+
 Name: biorob-math-sharp
 Description: biorob-math-sharp
 Version: @VERSION@
-Libraries=@expanded_libdir@/@PACKAGE@/Biorob.Math.dll
-
 Requires:
-Libs: -r:@expanded_libdir@/@PACKAGE@/Biorob.Math.dll
+Libs: -r:${libdir}/@PACKAGE@/Biorob.Math.dll
