@@ -1,7 +1,7 @@
 dnl Warning: This is an automatically generated file, do not edit!
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.54])
-AC_INIT([libbiorob-math1-sharp], [0.6])
+AC_INIT([libbiorob-math1-sharp], [0.7])
 AM_INIT_AUTOMAKE([foreign tar-ustar dist-xz no-dist-gzip])
 
 AC_CONFIG_MACRO_DIR([m4])
