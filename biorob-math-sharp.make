@@ -59,7 +59,11 @@ FILES = \
 	Biorob.Math.Solvers/Linear.cs \
 	Biorob.Math.Interpolation/Interpolator.cs \
 	Biorob.Math.Interpolation/PChip.cs \
-	Biorob.Math.Interpolation/Periodic.cs
+	Biorob.Math.Interpolation/Periodic.cs \
+	Biorob.Math.Geometry/AxisAngle.cs \
+	Biorob.Math.Geometry/Matrix.cs \
+	Biorob.Math.Geometry/Quaternion.cs \
+	Biorob.Math.Geometry/Vector.cs
 
 DATA_FILES =
 

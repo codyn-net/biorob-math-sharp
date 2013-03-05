@@ -55,6 +55,10 @@
     <Compile Include="Biorob.Math.Functions\Bezier.cs" />
     <Compile Include="Biorob.Math.Solvers\Linear.cs" />
     <Compile Include="Biorob.Math\Value.cs" />
+    <Compile Include="Biorob.Math.Geometry\Quaternion.cs" />
+    <Compile Include="Biorob.Math.Geometry\Vector.cs" />
+    <Compile Include="Biorob.Math.Geometry\Matrix.cs" />
+    <Compile Include="Biorob.Math.Geometry\AxisAngle.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -62,5 +66,6 @@
     <Folder Include="Biorob.Math.Solvers\" />
     <Folder Include="Biorob.Math.Interpolation\" />
     <Folder Include="Biorob.Math.Functions\" />
+    <Folder Include="Biorob.Math.Geometry\" />
   </ItemGroup>
 </Project>
