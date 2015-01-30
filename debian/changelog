@@ -8,6 +8,7 @@ libbiorob-math1-sharp (0.7-2) trusty; urgency=medium
   * Bumps Standards-Version to 3.9.5
   * Adds missing debian/copyright
   * Adds missing debian/watch
+  * Changes long description
 
  -- Alexandre Tuleu <alexandre.tuleu.2005@polytechnique.org>  Fri, 30 Jan 2015 13:22:49 +0100
 
