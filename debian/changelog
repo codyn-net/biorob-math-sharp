@@ -1,7 +1,13 @@
 libbiorob-math1-sharp (0.7-2) trusty; urgency=medium
 
   * Specific trusty release
-  * Changes maintainer to A. Tuleu
+  * Changed maintainer to A. Tuleu
+  * Removed duplicate Section: field
+  * Added missing ${misc:Depends}
+  * Set debian/source/format to 3.0 (quilt)
+  * Bumps Standards-Version to 3.9.5
+  * Adds missing debian/copyright
+  * Adds missing debian/watch
 
  -- Alexandre Tuleu <alexandre.tuleu.2005@polytechnique.org>  Fri, 30 Jan 2015 13:22:49 +0100
 
